@@ -1,0 +1,26 @@
+{
+  "name": "nestokki-cli",
+  "version": "1.0.0",
+  "bin": {
+    "nestokki": "dist/main.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc -w",
+    "start:js": "nodemon --watch dist --ext js --exec node dist/main.js",
+    "start:ts": "nodemon --watch src --ext ts --exec ts-node src/main.ts",
+    "start:dev": "concurrently \"npm run build:watch\" \"npm run start:js\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "description": "",
+  "dependencies": {
+    "commander": "^14.0.2"
+  },
+  "devDependencies": {
+    "@types/commander": "^2.12.0",
+    "concurrently": "^9.2.1",
+    "nodemon": "^3.1.11"
+  }
+}
