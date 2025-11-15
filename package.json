@@ -5,7 +5,8 @@
     "nestokki": "dist/main.js"
   },
   "scripts": {
-    "build": "tsc",
+    "copy:templates": "copyfiles -u 1 src/template/*.hbs dist",
+    "build": "tsc && npm run copy:templates",
     "build:watch": "tsc -w",
     "start:js": "nodemon --watch dist --ext js --exec node dist/main.js",
     "start:ts": "nodemon --watch src --ext ts --exec ts-node src/main.ts",
@@ -16,13 +17,16 @@
   "license": "MIT",
   "description": "",
   "dependencies": {
+    "chalk": "^4.1.2",
     "commander": "^14.0.2",
     "inquirer": "^12.11.1"
   },
   "devDependencies": {
+    "@types/chalk": "^0.4.31",
     "@types/commander": "^2.12.0",
     "@types/inquirer": "^9.0.9",
     "concurrently": "^9.2.1",
+    "copyfiles": "^2.4.1",
     "nodemon": "^3.1.11"
   }
 }
