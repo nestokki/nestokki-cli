@@ -10,12 +10,18 @@
     "build:watch": "tsc -w",
     "start:js": "nodemon --watch dist --ext js --exec node dist/main.js",
     "start:ts": "nodemon --watch src --ext ts --exec ts-node src/main.ts",
-    "start:dev": "concurrently \"npm run build:watch\" \"npm run start:js\""
+    "start:dev": "concurrently \"npm run build:watch\" \"npm run start:js\"",
+    "release:patch": "npm version patch && git push && git push --tags",
+    "release:minor": "npm version minor && git push && git push --tags",
+    "release:major": "npm version major && git push && git push --tags"
   },
   "keywords": [],
-  "author": "",
+  "author": "okonomiyakki",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "license": "MIT",
-  "description": "",
+  "description": "Nest CLI helper for file autocompletion",
   "dependencies": {
     "chalk": "^4.1.2",
     "commander": "^14.0.2",
