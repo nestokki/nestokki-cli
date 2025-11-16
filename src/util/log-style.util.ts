@@ -13,11 +13,28 @@ export const logConflictError = (name: string, relativePath: string): string => 
   const targetPath = chalk.gray(relativePath);
   return `${status} ${targetName} ${description} ${targetPath}`;
 };
+
 export const logCreated = (name: string, relativePath: string): string => {
   const status = chalk.green.bold('CREATED');
   const targetName = chalk.blueBright(name);
   const targetPath = chalk.gray(relativePath);
   return `${status} ${targetName} ${targetPath}`;
+};
+
+export const logSkipped = (name: string, relativePath: string): string => {
+  const status = chalk.magenta.bold('SKIPPED');
+  const targetName = chalk.blueBright(name);
+  const description = chalk.magenta('already registered');
+  const targetPath = chalk.gray(relativePath);
+  return `${status} ${targetName} ${description}  ${targetPath}`;
+};
+
+export const logUpdated = (names: string[], relativePath: string): string => {
+  const status = chalk.yellow.bold('UPDATED');
+  const targetName = [chalk.blueBright(names[0]), chalk.blueBright(names[1])];
+  const description = chalk.yellow('with');
+  const targetPath = chalk.gray(relativePath);
+  return `${status} ${targetName[0]} ${description} ${targetName[1]} ${targetPath}`;
 };
 
 export const logSuccess = (domainName: string, fileTypes: string[]): void => {
