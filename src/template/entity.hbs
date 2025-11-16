@@ -1,0 +1,27 @@
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+
+@Entity('{{tableName}}')
+export class {{entityClassName}} {
+  @PrimaryGeneratedColumn({
+    name: 'idx',
+    type: 'int',
+    unsigned: true,
+    comment: 'PK',
+  })
+  idx: number;
+
+  @Column('timestamp', {
+    name: 'updated_at',
+    onUpdate: 'CURRENT_TIMESTAMP',
+    default: () => 'CURRENT_TIMESTAMP',
+    comment: 'Updated At',
+  })
+  updatedAt: Date;
+  
+  @Column('timestamp', {
+    name: 'created_at',
+    default: () => 'CURRENT_TIMESTAMP',
+    comment: 'Created At',
+  })
+  createdAt: Date;
+}
