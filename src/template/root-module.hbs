@@ -1,0 +1,7 @@
+import { Module } from '@nestjs/common';
+import { {{domainNamePascal}}Module } from './{{domainNameKebab}}/{{domainNameKebab}}.module';
+
+@Module({
+  imports: [{{domainNamePascal}}Module],
+})
+export class {{rootClassName}} {}
