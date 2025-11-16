@@ -2,18 +2,18 @@ import fs from 'fs';
 import path from 'path';
 import ora from 'ora';
 import { toKebabCase, toPascalCase } from '../../util/convert-case.util';
-import { logCreated, logFailure, logSkippedRoot, logUpdated } from '../../util/log-style.util';
+import { logCreated, logFailure, logSkippedApi, logUpdated } from '../../util/log-style.util';
 
-export const generateRootModule = (domainName: string): void => {
+export const generateApiModule = (domainName: string): void => {
   const pascal = toPascalCase(domainName);
   const kebab = toKebabCase(domainName);
 
-  const rootClassName = 'ApiModule';
+  const apiClassName = 'ApiModule';
   const domainClassName = `${pascal}Module`;
   const domainNamePascal = pascal;
   const domainNameKebab = kebab;
 
-  const spinner = ora(`Generating for ${rootClassName}...\n`).start();
+  const spinner = ora(`Generating for ${apiClassName}...\n`).start();
 
   try {
     const cwd = process.cwd();
@@ -29,7 +29,7 @@ export const generateRootModule = (domainName: string): void => {
 
       if (apiModuleFile.includes(domainClassName)) {
         spinner.info(
-          logSkippedRoot([domainClassName, rootClassName], path.relative(cwd, moduleFilePath)),
+          logSkippedApi([domainClassName, apiClassName], path.relative(cwd, moduleFilePath)),
         );
         return;
       }
@@ -59,23 +59,23 @@ export const generateRootModule = (domainName: string): void => {
       fs.writeFileSync(moduleFilePath, apiModuleFile, 'utf8');
 
       spinner.succeed(
-        logUpdated([rootClassName, domainClassName], path.relative(cwd, moduleFilePath)),
+        logUpdated([apiClassName, domainClassName], path.relative(cwd, moduleFilePath)),
       );
 
       return;
     }
 
-    const templatePath = path.join(__dirname, '../../template/root-module.hbs');
+    const templatePath = path.join(__dirname, '../../template/api-module.hbs');
     const template = fs.readFileSync(templatePath, 'utf8');
 
     const content = template
       .replace(/{{domainNamePascal}}/g, domainNamePascal)
       .replace(/{{domainNameKebab}}/g, domainNameKebab)
-      .replace(/{{rootClassName}}/g, rootClassName);
+      .replace(/{{apiClassName}}/g, apiClassName);
 
     fs.writeFileSync(moduleFilePath, content, { encoding: 'utf8' });
 
-    spinner.succeed(logCreated(rootClassName, path.relative(cwd, moduleFilePath)));
+    spinner.succeed(logCreated(apiClassName, path.relative(cwd, moduleFilePath)));
   } catch (error: unknown) {
     spinner.fail(logFailure(domainClassName));
     throw error;
