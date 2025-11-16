@@ -5,14 +5,14 @@ import { toPascalCase, toKebabCase, toSnakeCase } from '../../util/convert-case.
 import { logConflictError, logCreated, logFailure } from '../../util/log-style.util';
 
 export const generateEntity = (domainName: string): void => {
-  const spinner = ora(`Generating for ${domainName}...\n`).start();
-
   const pascal = toPascalCase(domainName);
   const kebab = toKebabCase(domainName);
   const snake = toSnakeCase(domainName);
 
   const entityClassName = `${pascal}Entity`;
   const tableNameSnake = snake;
+
+  const spinner = ora(`Generating for ${entityClassName}...\n`).start();
 
   try {
     const cwd = process.cwd();

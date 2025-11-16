@@ -1,18 +1,18 @@
 import fs from 'fs';
 import path from 'path';
 import ora from 'ora';
-import { toPascalCase, toKebabCase, toSnakeCase } from '../../util/convert-case.util';
+import { toPascalCase, toKebabCase } from '../../util/convert-case.util';
 import { logConflictError, logCreated, logFailure } from '../../util/log-style.util';
 
 export const generateFeatureModule = (domainName: string): void => {
-  const spinner = ora(`Generating for ${domainName}...\n`).start();
-
   const pascal = toPascalCase(domainName);
   const kebab = toKebabCase(domainName);
 
   const domainClassName = `${pascal}Module`;
   const domainNamePascal = pascal;
   const domainNameKebab = kebab;
+
+  const spinner = ora(`Generating for ${domainClassName}...\n`).start();
 
   try {
     const cwd = process.cwd();
