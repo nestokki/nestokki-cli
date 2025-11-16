@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import ora from 'ora';
 import { toPascalCase, toKebabCase, toSnakeCase } from '../../util/convert-case.util';
-import { logConflictError, logCreated, logFailure } from '../../util/log-style.util';
+import { logCreated, logFailure, logSkipped } from '../../util/log-style.util';
 
 export const generateEntity = (domainName: string): void => {
   const pascal = toPascalCase(domainName);
@@ -25,7 +25,8 @@ export const generateEntity = (domainName: string): void => {
     const entityFilePath = path.join(entityDir, `${kebab}.entity.ts`);
 
     if (fs.existsSync(entityFilePath)) {
-      throw logConflictError(entityClassName, path.relative(cwd, entityFilePath));
+      spinner.info(logSkipped(entityClassName, path.relative(cwd, entityFilePath)));
+      return;
     }
 
     const templatePath = path.join(__dirname, '../../template/entity.hbs');
@@ -39,8 +40,7 @@ export const generateEntity = (domainName: string): void => {
 
     spinner.succeed(logCreated(entityClassName, path.relative(cwd, entityFilePath)));
   } catch (error: unknown) {
-    if (typeof error === 'string') spinner.fail(error);
-    else spinner.fail(logFailure(entityClassName));
+    spinner.fail(logFailure(entityClassName));
     throw error;
   }
 };

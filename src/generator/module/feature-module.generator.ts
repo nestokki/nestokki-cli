@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import ora from 'ora';
 import { toPascalCase, toKebabCase } from '../../util/convert-case.util';
-import { logConflictError, logCreated, logFailure } from '../../util/log-style.util';
+import { logCreated, logFailure, logSkipped } from '../../util/log-style.util';
 
 export const generateFeatureModule = (domainName: string): void => {
   const pascal = toPascalCase(domainName);
@@ -24,7 +24,8 @@ export const generateFeatureModule = (domainName: string): void => {
     const moduleFilePath = path.join(moduleDir, `${kebab}.module.ts`);
 
     if (fs.existsSync(moduleFilePath)) {
-      throw logConflictError(domainClassName, path.relative(cwd, moduleFilePath));
+      spinner.info(logSkipped(domainClassName, path.relative(cwd, moduleFilePath)));
+      return;
     }
 
     const templatePath = path.join(__dirname, '../../template/feature-module.hbs');
@@ -39,8 +40,7 @@ export const generateFeatureModule = (domainName: string): void => {
 
     spinner.succeed(logCreated(domainClassName, path.relative(cwd, moduleFilePath)));
   } catch (error: unknown) {
-    if (typeof error === 'string') spinner.fail(error);
-    else spinner.fail(logFailure(domainClassName));
+    spinner.fail(logFailure(domainClassName));
     throw error;
   }
 };
