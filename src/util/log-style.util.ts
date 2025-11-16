@@ -29,7 +29,7 @@ export const logSkipped = (name: string, relativePath: string): string => {
   return `${status} ${targetName} ${description} ${targetPath}`;
 };
 
-export const logSkippedRoot = (names: string[], relativePath: string): string => {
+export const logSkippedApi = (names: string[], relativePath: string): string => {
   const status = chalk.magenta.bold('SKIPPED');
   const targetName = [chalk.blueBright(names[0]), chalk.blueBright(names[1])];
   const description = chalk.magenta('already registered in');
@@ -50,7 +50,11 @@ export const logSuccess = (domainName: string, fileTypes: string[]): void => {
   console.log(`😀 Files you generate: [ ${fileTypes.join(', ')} ]\n`);
 };
 
-export const logError = (error: unknown): void => {
+export const logError = (message: string): void => {
+  console.error(message);
+};
+
+export const logUnhandledError = (error: unknown): void => {
   const description = chalk.red('Unexpected error while running prompt:');
   console.error(`❌ ${description}\n`, error);
 };
