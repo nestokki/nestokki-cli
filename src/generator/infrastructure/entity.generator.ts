@@ -12,13 +12,13 @@ export const generateEntity = (domainName: string): void => {
   const snake = toSnakeCase(domainName);
 
   const entityClassName = `${pascal}Entity`;
-  const tableName = snake;
+  const tableNameSnake = snake;
 
   try {
     const cwd = process.cwd();
 
-    const moduleDir = path.join(cwd, 'src', kebab);
-    const entityDir = path.join(moduleDir, 'infrastructure', 'entity');
+    const moduleDir = path.join(cwd, 'src', 'api', kebab);
+    const entityDir = path.join(moduleDir, 'infrastructure');
 
     fs.mkdirSync(entityDir, { recursive: true });
 
@@ -32,7 +32,7 @@ export const generateEntity = (domainName: string): void => {
     const template = fs.readFileSync(templatePath, 'utf8');
 
     const content = template
-      .replace(/{{tableName}}/g, tableName)
+      .replace(/{{tableNameSnake}}/g, tableNameSnake)
       .replace(/{{entityClassName}}/g, entityClassName);
 
     fs.writeFileSync(entityFilePath, content, { encoding: 'utf8' });
