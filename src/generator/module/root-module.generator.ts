@@ -2,13 +2,14 @@ import fs from 'fs';
 import path from 'path';
 import ora from 'ora';
 import { toKebabCase, toPascalCase } from '../../util/convert-case.util';
-import { logConflictError, logCreated, logFailure } from '../../util/log-style.util';
+import { logCreated, logFailure, logSkippedRoot, logUpdated } from '../../util/log-style.util';
 
 export const generateRootModule = (domainName: string): void => {
   const pascal = toPascalCase(domainName);
   const kebab = toKebabCase(domainName);
 
   const rootClassName = 'ApiModule';
+  const domainClassName = `${pascal}Module`;
   const domainNamePascal = pascal;
   const domainNameKebab = kebab;
 
@@ -24,7 +25,44 @@ export const generateRootModule = (domainName: string): void => {
     const moduleFilePath = path.join(moduleDir, 'api.module.ts');
 
     if (fs.existsSync(moduleFilePath)) {
-      throw logConflictError(rootClassName, path.relative(cwd, moduleFilePath));
+      let apiModuleFile = fs.readFileSync(moduleFilePath, 'utf8');
+
+      if (apiModuleFile.includes(domainClassName)) {
+        spinner.info(
+          logSkippedRoot([domainClassName, rootClassName], path.relative(cwd, moduleFilePath)),
+        );
+        return;
+      }
+
+      const importLine = `import { ${domainClassName} } from './${domainNameKebab}/${domainNameKebab}.module';`;
+
+      const lastImportMatch = apiModuleFile.match(/(^import .+$)/gm);
+      if (lastImportMatch && lastImportMatch.length > 0) {
+        const lastImport = lastImportMatch[lastImportMatch.length - 1];
+
+        apiModuleFile = apiModuleFile.replace(lastImport, `${lastImport}\n${importLine}`);
+      } else {
+        apiModuleFile = `${importLine}\n${apiModuleFile}`;
+      }
+
+      apiModuleFile = apiModuleFile.replace(/imports:\s*\[([^\]]*)\]/, (_, inner) => {
+        const items = inner
+          .split(',')
+          .map((s: string) => s.trim())
+          .filter(Boolean);
+
+        if (!items.includes(domainClassName)) items.push(domainClassName);
+
+        return `imports: [${items.join(', ')}]`;
+      });
+
+      fs.writeFileSync(moduleFilePath, apiModuleFile, 'utf8');
+
+      spinner.succeed(
+        logUpdated([rootClassName, domainClassName], path.relative(cwd, moduleFilePath)),
+      );
+
+      return;
     }
 
     const templatePath = path.join(__dirname, '../../template/root-module.hbs');
@@ -39,8 +77,7 @@ export const generateRootModule = (domainName: string): void => {
 
     spinner.succeed(logCreated(rootClassName, path.relative(cwd, moduleFilePath)));
   } catch (error: unknown) {
-    if (typeof error === 'string') spinner.fail(error);
-    else spinner.fail(logFailure(rootClassName));
+    spinner.fail(logFailure(domainClassName));
     throw error;
   }
 };
