@@ -24,9 +24,17 @@ export const logCreated = (name: string, relativePath: string): string => {
 export const logSkipped = (name: string, relativePath: string): string => {
   const status = chalk.magenta.bold('SKIPPED');
   const targetName = chalk.blueBright(name);
-  const description = chalk.magenta('already registered');
+  const description = chalk.magenta('already generated');
   const targetPath = chalk.gray(relativePath);
-  return `${status} ${targetName} ${description}  ${targetPath}`;
+  return `${status} ${targetName} ${description} ${targetPath}`;
+};
+
+export const logSkippedRoot = (names: string[], relativePath: string): string => {
+  const status = chalk.magenta.bold('SKIPPED');
+  const targetName = [chalk.blueBright(names[0]), chalk.blueBright(names[1])];
+  const description = chalk.magenta('already registered in');
+  const targetPath = chalk.gray(relativePath);
+  return `${status} ${targetName[0]} ${description} ${targetName[1]} ${targetPath}`;
 };
 
 export const logUpdated = (names: string[], relativePath: string): string => {
