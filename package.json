@@ -1,5 +1,5 @@
 {
-  "name": "nestokki-cli",
+  "name": "@nestokki/cli",
   "version": "1.0.0",
   "bin": {
     "nestokki": "dist/main.js"
@@ -25,7 +25,8 @@
   "dependencies": {
     "chalk": "^4.1.2",
     "commander": "^14.0.2",
-    "inquirer": "^12.11.1"
+    "inquirer": "^12.11.1",
+    "ora": "^5.4.1"
   },
   "devDependencies": {
     "@types/chalk": "^0.4.31",
