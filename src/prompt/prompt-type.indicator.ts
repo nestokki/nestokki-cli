@@ -1,9 +1,27 @@
-import { GenerationCategory, LayerCategory } from '../common/enum';
+import { GenerationCategory, LayerCategory, OrmCategory } from '../common/enum';
 
 export const getGenerationTypeChoices = (): { name: string; value: string }[] => {
   return [
-    { name: 'Feature Module', value: GenerationCategory.FEATURE },
-    { name: 'Config Module', value: GenerationCategory.CONFIG },
+    {
+      name: 'Database Module (requires dependency e.g. @nestjs/typeorm )',
+      value: GenerationCategory.DATABASE,
+    },
+    {
+      name: 'Feature Module (requires dependency e.g. @nestjs/typeorm, typeorm)',
+      value: GenerationCategory.FEATURE,
+    },
+  ];
+};
+
+export const getDatabaseOrmTypeChoices = (): {
+  name: string;
+  value: string;
+  checked?: boolean;
+}[] => {
+  return [
+    { name: 'Module (database)', value: OrmCategory.MODULE, checked: true },
+    { name: 'typeorm (options-factory)', value: OrmCategory.TYPEORM },
+    { name: 'prisma (options-factory)', value: OrmCategory.PRISMA },
   ];
 };
 

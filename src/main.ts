@@ -4,10 +4,11 @@ import { Command } from 'commander';
 import pkg from '../package.json';
 import { logError, logSuccess } from './util/log-style.util';
 import { handleExit } from './util/handle-exit.util';
+import { Commands, GenerationCategory, LayerCategory, OrmCategory } from './common/enum';
 import { generateApiModule } from './generator/module/api-module.generator';
 import { generateFeatureModule } from './generator/module/feature-module.generator';
-import { Commands, GenerationCategory, LayerCategory } from './common/enum';
 import {
+  handleDatabaseOrmType,
   handleFeatureDomainName,
   handleFeatureLayerType,
   handleGenerationType,
@@ -24,7 +25,7 @@ program
 program
   .command(Commands.GENERATE)
   .description('Interactively select a domain name and files to generate')
-  .argument('[type]', 'Generation type (api | config | database)')
+  .argument('[type]', 'Generation type (database | feature)')
   .action(async (type) => {
     let generationCategory: GenerationCategory;
 
@@ -38,6 +39,25 @@ program
     } else generationCategory = type;
 
     switch (generationCategory) {
+      case GenerationCategory.DATABASE:
+        try {
+          const { ormTypeList } = await handleDatabaseOrmType();
+
+          if (ormTypeList.includes(OrmCategory.MODULE)) {
+            console.log('😥 Database module is not available yet.');
+          }
+          if (ormTypeList.includes(OrmCategory.TYPEORM)) {
+            console.log('😥 Database typeorm is not available yet.');
+          }
+          if (ormTypeList.includes(OrmCategory.PRISMA)) {
+            console.log('😥 Database prisma is not available yet.');
+          }
+
+          return;
+          logSuccess('DataBase', ormTypeList);
+        } catch (error: unknown) {
+          return handleExit(error, process);
+        }
       case GenerationCategory.FEATURE:
         try {
           const { domainName } = await handleFeatureDomainName();
@@ -57,11 +77,8 @@ program
           return handleExit(error, process);
         }
         break;
-      case GenerationCategory.CONFIG:
-        console.log('TODO: Config');
-        break;
       default:
-        logError(`😥 Unknown Generation type "${type}". (e.g. api, config)`);
+        logError(`😥 Unknown Generation type "${type}". (e.g. database, feature)`);
         break;
     }
   });

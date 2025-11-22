@@ -45,8 +45,8 @@ export const logUpdated = (names: string[], relativePath: string): string => {
   return `${status} ${targetName[0]} ${description} ${targetName[1]} ${targetPath}`;
 };
 
-export const logSuccess = (domainName: string, typeList: string[]): void => {
-  console.log(`\n🚀 Successfully generated for 👉 ${domainName}`);
+export const logSuccess = (target: string, typeList: string[]): void => {
+  console.log(`\n🚀 Successfully generated for 👉 ${target}`);
   console.log(`😀 You generate: [ ${typeList.join(', ')} ]\n`);
 };
 

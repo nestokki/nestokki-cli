@@ -1,11 +1,16 @@
 import inquirer from 'inquirer';
-import { getFeatureLayerTypeChoices, getGenerationTypeChoices } from './prompt-type.indicator';
+import { LayerCategory, OrmCategory } from '../common/enum';
+import {
+  getDatabaseOrmTypeChoices,
+  getFeatureLayerTypeChoices,
+  getGenerationTypeChoices,
+} from './prompt-type.indicator';
 import {
   InputDomainNameResponse,
   SelectLayerTypeResponse,
   GenerationType,
+  SelectOrmTypeResponse,
 } from '../common/interface';
-import { LayerCategory } from '../common/enum';
 
 export const handleGenerationType = async (): Promise<GenerationType> => {
   return await inquirer.prompt<GenerationType>([
@@ -16,6 +21,25 @@ export const handleGenerationType = async (): Promise<GenerationType> => {
       choices: getGenerationTypeChoices(),
       validate: (choices: string[]) => {
         if (!choices.length) return '😥 You must select at least one generation type.';
+        return true;
+      },
+    },
+  ]);
+};
+
+export const handleDatabaseOrmType = async (): Promise<SelectOrmTypeResponse> => {
+  const required = OrmCategory.MODULE;
+
+  return await inquirer.prompt<SelectOrmTypeResponse>([
+    {
+      type: 'checkbox',
+      name: 'ormTypeList',
+      message: 'Which orm would you like to generate?',
+      loop: false,
+      choices: getDatabaseOrmTypeChoices(),
+      validate: (choices: string[]) => {
+        if (!choices.length) return '😥 You must select at least one orm type.';
+        if (!choices.includes(required)) return '😥 Module (database) is a required selection.';
         return true;
       },
     },
@@ -46,11 +70,11 @@ export const handleFeatureLayerType = async (): Promise<SelectLayerTypeResponse>
     {
       type: 'checkbox',
       name: 'layerTypeList',
-      message: 'Which file would you like to generate?',
+      message: 'Which layer would you like to generate?',
       loop: false,
       choices: getFeatureLayerTypeChoices(),
       validate: (choices: string[]) => {
-        if (!choices.length) return '😥 You must select at least one file type.';
+        if (!choices.length) return '😥 You must select at least one layer type.';
         if (!choices.includes(required)) return '😥 Module (api, feature) is a required selection.';
         return true;
       },

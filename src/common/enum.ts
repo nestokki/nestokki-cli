@@ -3,9 +3,14 @@ export enum Commands {
 }
 
 export enum GenerationCategory {
-  FEATURE = 'feature',
-  CONFIG = 'config',
   DATABASE = 'database',
+  FEATURE = 'feature',
+}
+
+export enum OrmCategory {
+  MODULE = 'module',
+  TYPEORM = 'typeorm',
+  PRISMA = 'prisma',
 }
 
 export enum LayerCategory {
