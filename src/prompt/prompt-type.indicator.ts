@@ -1,6 +1,7 @@
 import { GenerationCategory, LayerCategory, OrmCategory } from '../common/enum';
+import { CheckableChoices, Choices } from '../common/interface';
 
-export const getGenerationTypeChoices = (): { name: string; value: string }[] => {
+export const getGenerationTypeChoices = (): Choices[] => {
   return [
     {
       name: 'Database Module (requires dependency e.g. @nestjs/typeorm )',
@@ -13,11 +14,7 @@ export const getGenerationTypeChoices = (): { name: string; value: string }[] =>
   ];
 };
 
-export const getDatabaseOrmTypeChoices = (): {
-  name: string;
-  value: string;
-  checked?: boolean;
-}[] => {
+export const getDatabaseOrmTypeChoices = (): CheckableChoices[] => {
   return [
     { name: 'Module (database)', value: OrmCategory.MODULE, checked: true },
     { name: 'typeorm (options-factory)', value: OrmCategory.TYPEORM },
@@ -25,11 +22,7 @@ export const getDatabaseOrmTypeChoices = (): {
   ];
 };
 
-export const getFeatureLayerTypeChoices = (): {
-  name: string;
-  value: string;
-  checked?: boolean;
-}[] => {
+export const getFeatureLayerTypeChoices = (): CheckableChoices[] => {
   return [
     { name: 'Module (api, feature)', value: LayerCategory.MODULE, checked: true },
     { name: 'Domain (domain, props, service)', value: LayerCategory.DOMAIN },
