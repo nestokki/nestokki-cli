@@ -10,6 +10,7 @@ import {
   SelectLayerTypeResponse,
   GenerationType,
   SelectOrmTypeResponse,
+  SelectedChoices,
 } from '../common/interface';
 
 export const handleGenerationType = async (): Promise<GenerationType> => {
@@ -28,8 +29,6 @@ export const handleGenerationType = async (): Promise<GenerationType> => {
 };
 
 export const handleDatabaseOrmType = async (): Promise<SelectOrmTypeResponse> => {
-  const required = OrmCategory.MODULE;
-
   return await inquirer.prompt<SelectOrmTypeResponse>([
     {
       type: 'checkbox',
@@ -37,9 +36,10 @@ export const handleDatabaseOrmType = async (): Promise<SelectOrmTypeResponse> =>
       message: 'Which orm would you like to generate?',
       loop: false,
       choices: getDatabaseOrmTypeChoices(),
-      validate: (choices: string[]) => {
+      validate: (choices: SelectedChoices[]) => {
         if (!choices.length) return '😥 You must select at least one orm type.';
-        if (!choices.includes(required)) return '😥 Module (database) is a required selection.';
+        if (!choices.some((c) => c.value === OrmCategory.MODULE))
+          return '😥 Module (database) is a required selection.';
         return true;
       },
     },
@@ -64,8 +64,6 @@ export const handleFeatureDomainName = async (): Promise<InputDomainNameResponse
 };
 
 export const handleFeatureLayerType = async (): Promise<SelectLayerTypeResponse> => {
-  const required = LayerCategory.MODULE;
-
   return await inquirer.prompt<SelectLayerTypeResponse>([
     {
       type: 'checkbox',
@@ -73,9 +71,10 @@ export const handleFeatureLayerType = async (): Promise<SelectLayerTypeResponse>
       message: 'Which layer would you like to generate?',
       loop: false,
       choices: getFeatureLayerTypeChoices(),
-      validate: (choices: string[]) => {
+      validate: (choices: SelectedChoices[]) => {
         if (!choices.length) return '😥 You must select at least one layer type.';
-        if (!choices.includes(required)) return '😥 Module (api, feature) is a required selection.';
+        if (!choices.some((c) => c.value === LayerCategory.MODULE))
+          return '😥 Module (api, feature) is a required selection.';
         return true;
       },
     },
