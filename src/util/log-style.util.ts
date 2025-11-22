@@ -45,9 +45,9 @@ export const logUpdated = (names: string[], relativePath: string): string => {
   return `${status} ${targetName[0]} ${description} ${targetName[1]} ${targetPath}`;
 };
 
-export const logSuccess = (domainName: string, fileTypes: string[]): void => {
-  console.log(`\n🚀 Successfully created files for 👉 ${domainName}`);
-  console.log(`😀 Files you generate: [ ${fileTypes.join(', ')} ]\n`);
+export const logSuccess = (domainName: string, typeList: string[]): void => {
+  console.log(`\n🚀 Successfully generated for 👉 ${domainName}`);
+  console.log(`😀 You generate: [ ${typeList.join(', ')} ]\n`);
 };
 
 export const logError = (message: string): void => {

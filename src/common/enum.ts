@@ -3,15 +3,15 @@ export enum Commands {
 }
 
 export enum GenerationCategory {
-  API = 'api',
+  FEATURE = 'feature',
   CONFIG = 'config',
   DATABASE = 'database',
 }
 
-export enum ApiLayerCategory {
+export enum LayerCategory {
   MODULE = 'module',
-  PRESENTATION = 'presentation',
-  APPLICATION = 'application',
   DOMAIN = 'domain',
   INFRASTRUCTURE = 'infrastructure',
+  APPLICATION = 'application',
+  PRESENTATION = 'presentation',
 }

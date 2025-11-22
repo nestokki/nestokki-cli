@@ -1,13 +1,13 @@
-import { GenerationCategory } from './enum';
+import { GenerationCategory, LayerCategory } from './enum';
 
 export interface GenerationType {
   generationType: GenerationCategory;
 }
 
-export interface DomainName {
+export interface InputDomainNameResponse {
   domainName: string;
 }
 
-export interface ApiFileType {
-  apiFileTypes: string[];
+export interface SelectLayerTypeResponse {
+  layerTypeList: LayerCategory[];
 }

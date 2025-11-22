@@ -1,7 +1,11 @@
 import inquirer from 'inquirer';
-import { getApiFileTypeChoices, getGenerationTypeChoices } from './prompt-type.indicator';
-import { ApiFileType, DomainName, GenerationType } from '../common/interface';
-import { GenerationCategory } from '../common/enum';
+import { getFeatureLayerTypeChoices, getGenerationTypeChoices } from './prompt-type.indicator';
+import {
+  InputDomainNameResponse,
+  SelectLayerTypeResponse,
+  GenerationType,
+} from '../common/interface';
+import { LayerCategory } from '../common/enum';
 
 export const handleGenerationType = async (): Promise<GenerationType> => {
   return await inquirer.prompt<GenerationType>([
@@ -18,10 +22,10 @@ export const handleGenerationType = async (): Promise<GenerationType> => {
   ]);
 };
 
-export const handleApiDomainName = async (): Promise<DomainName> => {
+export const handleFeatureDomainName = async (): Promise<InputDomainNameResponse> => {
   const kebabRegex = /^[a-z][a-z0-9-]*$/;
 
-  return await inquirer.prompt<DomainName>([
+  return await inquirer.prompt<InputDomainNameResponse>([
     {
       type: 'input',
       name: 'domainName',
@@ -29,24 +33,26 @@ export const handleApiDomainName = async (): Promise<DomainName> => {
       validate: (input: string) => {
         if (!input.trim()) return '😥 Domain name is required.';
         if (!kebabRegex.test(input.trim())) return '😥 Kebab-case only. (e.g. user, board-comment)';
-
         return true;
       },
     },
   ]);
 };
 
-export const handleApiFileType = async (category: GenerationCategory): Promise<ApiFileType> => {
-  return await inquirer.prompt<ApiFileType>([
+export const handleFeatureLayerType = async (): Promise<SelectLayerTypeResponse> => {
+  const required = LayerCategory.MODULE;
+
+  return await inquirer.prompt<SelectLayerTypeResponse>([
     {
       type: 'checkbox',
-      name: 'apiFileTypes',
+      name: 'layerTypeList',
       message: 'Which file would you like to generate?',
       loop: false,
-      choices: getApiFileTypeChoices(category),
+      choices: getFeatureLayerTypeChoices(),
       validate: (choices: string[]) => {
         if (!choices.length) return '😥 You must select at least one file type.';
-        if (!choices.includes('api-module')) return '😥 Module (api) is a required selection.';
+        if (!choices.includes(required)) return '😥 Module (api, feature) is a required selection.';
+        return true;
       },
     },
   ]);

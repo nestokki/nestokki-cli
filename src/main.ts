@@ -4,13 +4,12 @@ import { Command } from 'commander';
 import pkg from '../package.json';
 import { logError, logSuccess } from './util/log-style.util';
 import { handleExit } from './util/handle-exit.util';
-import { generateApiModule } from './generator/module/root-module.generator';
+import { generateApiModule } from './generator/module/api-module.generator';
 import { generateFeatureModule } from './generator/module/feature-module.generator';
-import { generateEntity } from './generator/infrastructure/entity.generator';
-import { Commands, GenerationCategory } from './common/enum';
+import { Commands, GenerationCategory, LayerCategory } from './common/enum';
 import {
-  handleApiDomainName,
-  handleApiFileType,
+  handleFeatureDomainName,
+  handleFeatureLayerType,
   handleGenerationType,
 } from './prompt/prompt-type.handler';
 
@@ -27,31 +26,33 @@ program
   .description('Interactively select a domain name and files to generate')
   .argument('[type]', 'Generation type (api | config | database)')
   .action(async (type) => {
-    let generationType: GenerationCategory;
+    let generationCategory: GenerationCategory;
 
     if (!type) {
       try {
-        const { generationType: selectedType } = await handleGenerationType();
-
-        generationType = selectedType;
+        const { generationType } = await handleGenerationType();
+        generationCategory = generationType;
       } catch (error: unknown) {
         return handleExit(error, process);
       }
-    } else {
-      generationType = type;
-    }
+    } else generationCategory = type;
 
-    switch (generationType) {
-      case GenerationCategory.API:
+    switch (generationCategory) {
+      case GenerationCategory.FEATURE:
         try {
-          const { domainName: insertedName } = await handleApiDomainName();
-          const { apiFileTypes: selectedTypes } = await handleApiFileType(generationType);
+          const { domainName } = await handleFeatureDomainName();
+          const { layerTypeList } = await handleFeatureLayerType();
 
-          if (selectedTypes.includes('api-module')) generateApiModule(insertedName);
-          if (selectedTypes.includes('feature-module')) generateFeatureModule(insertedName);
-          if (selectedTypes.includes('entity')) generateEntity(insertedName);
+          if (layerTypeList.includes(LayerCategory.MODULE)) {
+            generateApiModule(domainName);
+            generateFeatureModule(domainName);
+          }
 
-          logSuccess(insertedName, selectedTypes);
+          // if (layerTypeList.includes('api-module')) generateApiModule(domainName);
+          // if (layerTypeList.includes('feature-module')) generateFeatureModule(domainName);
+          // if (layerTypeList.includes('entity')) generateEntity(domainName);
+
+          logSuccess(domainName, layerTypeList);
         } catch (error: unknown) {
           return handleExit(error, process);
         }
