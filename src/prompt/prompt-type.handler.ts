@@ -19,6 +19,8 @@ export const handleGenerationType = async (): Promise<GenerationType> => {
 };
 
 export const handleApiDomainName = async (): Promise<DomainName> => {
+  const kebabRegex = /^[a-z][a-z0-9-]*$/;
+
   return await inquirer.prompt<DomainName>([
     {
       type: 'input',
@@ -26,9 +28,8 @@ export const handleApiDomainName = async (): Promise<DomainName> => {
       message: 'Enter the domain name to generate (kebab-case only):',
       validate: (input: string) => {
         if (!input.trim()) return '😥 Domain name is required.';
-        if (!/^[a-z][a-z0-9-]*$/.test(input.trim())) {
-          return '😥 Kebab-case only. (e.g. user, board-comment)';
-        }
+        if (!kebabRegex.test(input.trim())) return '😥 Kebab-case only. (e.g. user, board-comment)';
+
         return true;
       },
     },
@@ -45,7 +46,7 @@ export const handleApiFileType = async (category: GenerationCategory): Promise<A
       choices: getApiFileTypeChoices(category),
       validate: (choices: string[]) => {
         if (!choices.length) return '😥 You must select at least one file type.';
-        return true;
+        if (!choices.includes('api-module')) return '😥 Module (api) is a required selection.';
       },
     },
   ]);

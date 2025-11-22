@@ -2,8 +2,8 @@ import { GenerationCategory } from '../common/enum';
 
 export const getGenerationTypeChoices = (): { name: string; value: string }[] => {
   return [
-    { name: 'API', value: GenerationCategory.API },
-    { name: 'Config', value: GenerationCategory.CONFIG },
+    { name: 'API Module', value: GenerationCategory.API },
+    { name: 'Config Module', value: GenerationCategory.CONFIG },
   ];
 };
 
