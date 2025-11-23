@@ -1,0 +1,59 @@
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { {{domainNamePascal}}Repository } from '../infrastructure/{{domainNameKebab}}.repository';
+import { {{domainNamePascal}}Domain } from './model/{{domainNameKebab}}.domain';
+
+/** Pagination limit type (remove these in real use!) */
+declare enum PageLimit {
+  PER_PAGE_10 = 10,
+  PER_PAGE_20 = 20,
+  PER_PAGE_50 = 50,
+  PER_PAGE_100 = 100,
+}
+/*******************************************************/
+
+@Injectable()
+export class {{domainClassName}} {
+  constructor(private readonly {{domainNameKebab}}Repository: {{domainNamePascal}}Repository) {}
+
+  async create{{domainNamePascal}}(required: string, nullable: string | null): Promise<void> {
+    await this.{{domainNameKebab}}Repository.create{{domainNamePascal}}({{domainNamePascal}}Domain.create({ required, nullable }));
+  }
+
+  async update{{domainNamePascal}}(
+    domain: {{domainNamePascal}}Domain,
+    idx: number,
+    required?: string,
+    nullable?: string | null,
+  ): Promise<void> {
+    await this.{{domainNameKebab}}Repository.update{{domainNamePascal}}(idx, {{domainNamePascal}}Domain.update(domain, { required, nullable }));
+  }
+
+  async remove{{domainNamePascal}}(idx: number): Promise<void> {
+    await this.{{domainNameKebab}}Repository.remove{{domainNamePascal}}(idx);
+  }
+
+  async find{{domainNamePascal}}ByIdx(idx: number): Promise<{{domainNamePascal}}Domain> {
+    const {{domainNameKebab}} = await this.{{domainNameKebab}}Repository.find{{domainNamePascal}}ByIdx(idx);
+    if (!{{domainNameKebab}}) throw new NotFoundException('{{domainNameKebab}} not found');
+    return {{domainNameKebab}};
+  }
+
+  async find{{domainNamePascal}}List(page: number, limit: PageLimit): Promise<[{{domainNamePascal}}Domain[], number]> {
+    return await this.{{domainNameKebab}}Repository.find{{domainNamePascal}}List(page, limit);
+  }
+
+  async find{{domainNamePascal}}Model(idx: number): Promise<{{domainNamePascal}}Domain> {
+    const {{domainNameKebab}} = await this.{{domainNameKebab}}Repository.find{{domainNamePascal}}ModelByIdxWithRelations(idx);
+    if (!{{domainNameKebab}}) throw new NotFoundException('{{domainNameKebab}} not found');
+    return {{domainNameKebab}};
+  }
+  
+  async find{{domainNamePascal}}ModelList(page: number, limit: PageLimit): Promise<[{{domainNamePascal}}Domain[], number]> {
+    return await this.{{domainNameKebab}}Repository.find{{domainNamePascal}}ModelListWithRelations(page, limit);
+  }
+
+  async throwIf{{domainNamePascal}}ExistsByUnique(idx: number): Promise<void> {
+    const {{domainNameKebab}} = await this.{{domainNameKebab}}Repository.find{{domainNamePascal}}ByIdx(idx);
+    if ({{domainNameKebab}}) throw new ConflictException('{{domainNameKebab}} already exists');
+  }
+}
