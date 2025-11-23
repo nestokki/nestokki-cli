@@ -5,26 +5,25 @@ import { toPascalCase, toKebabCase } from '../../util/convert-case.util';
 import { logCreated, logFailure, logSkipped } from '../../util/log-style.util';
 
 export const generateFeatureModule = (domainName: string): void => {
-  const pascal = toPascalCase(domainName);
-  const kebab = toKebabCase(domainName);
+  const domainNamePascal = toPascalCase(domainName);
+  const domainNameKebab = toKebabCase(domainName);
 
-  const domainClassName = `${pascal}Module`;
-  const domainNamePascal = pascal;
-  const domainNameKebab = kebab;
+  const domainClassName = `${domainNamePascal}Module`;
 
   const spinner = ora(`Generating for ${domainClassName}...\n`).start();
 
   try {
     const cwd = process.cwd();
 
-    const moduleDir = path.join(cwd, 'src', 'api', kebab);
+    const moduleDir = path.join(cwd, 'src', 'api', domainNameKebab);
 
     fs.mkdirSync(moduleDir, { recursive: true });
 
-    const moduleFilePath = path.join(moduleDir, `${kebab}.module.ts`);
+    const moduleFilePath = path.join(moduleDir, `${domainNameKebab}.module.ts`);
+    const relativePath = path.relative(cwd, moduleFilePath);
 
     if (fs.existsSync(moduleFilePath)) {
-      spinner.info(logSkipped(domainClassName, path.relative(cwd, moduleFilePath)));
+      spinner.info(logSkipped(domainClassName, relativePath));
       return;
     }
 
@@ -32,13 +31,13 @@ export const generateFeatureModule = (domainName: string): void => {
     const template = fs.readFileSync(templatePath, 'utf8');
 
     const content = template
+      .replace(/{{domainClassName}}/g, domainClassName)
       .replace(/{{domainNamePascal}}/g, domainNamePascal)
-      .replace(/{{domainNameKebab}}/g, domainNameKebab)
-      .replace(/{{domainClassName}}/g, domainClassName);
+      .replace(/{{domainNameKebab}}/g, domainNameKebab);
 
     fs.writeFileSync(moduleFilePath, content, { encoding: 'utf8' });
 
-    spinner.succeed(logCreated(domainClassName, path.relative(cwd, moduleFilePath)));
+    spinner.succeed(logCreated(domainClassName, relativePath));
   } catch (error: unknown) {
     spinner.fail(logFailure(domainClassName));
     throw error;

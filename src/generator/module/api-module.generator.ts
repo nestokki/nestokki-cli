@@ -5,15 +5,13 @@ import { toKebabCase, toPascalCase } from '../../util/convert-case.util';
 import { logCreated, logFailure, logSkippedApi, logUpdated } from '../../util/log-style.util';
 
 export const generateApiModule = (domainName: string): void => {
-  const pascal = toPascalCase(domainName);
-  const kebab = toKebabCase(domainName);
+  const domainNamePascal = toPascalCase(domainName);
+  const domainNameKebab = toKebabCase(domainName);
 
-  const apiClassName = 'ApiModule';
-  const domainClassName = `${pascal}Module`;
-  const domainNamePascal = pascal;
-  const domainNameKebab = kebab;
+  const rootClassName = 'ApiModule';
+  const domainClassName = `${domainNamePascal}Module`;
 
-  const spinner = ora(`Generating for ${apiClassName}...\n`).start();
+  const spinner = ora(`Generating for ${rootClassName}...\n`).start();
 
   try {
     const cwd = process.cwd();
@@ -23,14 +21,13 @@ export const generateApiModule = (domainName: string): void => {
     fs.mkdirSync(moduleDir, { recursive: true });
 
     const moduleFilePath = path.join(moduleDir, 'api.module.ts');
+    const relativePath = path.relative(cwd, moduleFilePath);
 
     if (fs.existsSync(moduleFilePath)) {
       let apiModuleFile = fs.readFileSync(moduleFilePath, 'utf8');
 
       if (apiModuleFile.includes(domainClassName)) {
-        spinner.info(
-          logSkippedApi([domainClassName, apiClassName], path.relative(cwd, moduleFilePath)),
-        );
+        spinner.info(logSkippedApi([domainClassName, rootClassName], relativePath));
         return;
       }
 
@@ -58,9 +55,7 @@ export const generateApiModule = (domainName: string): void => {
 
       fs.writeFileSync(moduleFilePath, apiModuleFile, 'utf8');
 
-      spinner.succeed(
-        logUpdated([apiClassName, domainClassName], path.relative(cwd, moduleFilePath)),
-      );
+      spinner.succeed(logUpdated([rootClassName, domainClassName], relativePath));
 
       return;
     }
@@ -69,13 +64,13 @@ export const generateApiModule = (domainName: string): void => {
     const template = fs.readFileSync(templatePath, 'utf8');
 
     const content = template
+      .replace(/{{rootClassName}}/g, rootClassName)
       .replace(/{{domainNamePascal}}/g, domainNamePascal)
-      .replace(/{{domainNameKebab}}/g, domainNameKebab)
-      .replace(/{{apiClassName}}/g, apiClassName);
+      .replace(/{{domainNameKebab}}/g, domainNameKebab);
 
     fs.writeFileSync(moduleFilePath, content, { encoding: 'utf8' });
 
-    spinner.succeed(logCreated(apiClassName, path.relative(cwd, moduleFilePath)));
+    spinner.succeed(logCreated(rootClassName, relativePath));
   } catch (error: unknown) {
     spinner.fail(logFailure(domainClassName));
     throw error;

@@ -5,29 +5,28 @@ import { toPascalCase, toKebabCase, toSnakeCase, toCamelCase } from '../../util/
 import { logCreated, logFailure, logSkipped } from '../../util/log-style.util';
 
 export const generateEntity = (domainName: string): void => {
-  const pascal = toPascalCase(domainName);
-  const kebab = toKebabCase(domainName);
-  const snake = toSnakeCase(domainName);
-  const camel = toCamelCase(domainName);
+  const domainNamePascal = toPascalCase(domainName);
+  const domainNameKebab = toKebabCase(domainName);
+  const domainNameSnake = toSnakeCase(domainName);
+  const domainNameCamel = toCamelCase(domainName);
 
-  const entityClassName = `${pascal}Entity`;
-  const domainNameSnake = snake;
-  const domainNameCamel = camel;
+  const entityClassName = `${domainNamePascal}Entity`;
 
   const spinner = ora(`Generating for ${entityClassName}...\n`).start();
 
   try {
     const cwd = process.cwd();
 
-    const moduleDir = path.join(cwd, 'src', 'api', kebab);
+    const moduleDir = path.join(cwd, 'src', 'api', domainNameKebab);
     const entityDir = path.join(moduleDir, 'infrastructure');
 
     fs.mkdirSync(entityDir, { recursive: true });
 
-    const entityFilePath = path.join(entityDir, `${kebab}.entity.ts`);
+    const entityFilePath = path.join(entityDir, `${domainNameKebab}.entity.ts`);
+    const relativePath = path.relative(cwd, entityFilePath);
 
     if (fs.existsSync(entityFilePath)) {
-      spinner.info(logSkipped(entityClassName, path.relative(cwd, entityFilePath)));
+      spinner.info(logSkipped(entityClassName, relativePath));
       return;
     }
 
@@ -35,13 +34,13 @@ export const generateEntity = (domainName: string): void => {
     const template = fs.readFileSync(templatePath, 'utf8');
 
     const content = template
+      .replace(/{{entityClassName}}/g, entityClassName)
       .replace(/{{domainNameSnake}}/g, domainNameSnake)
-      .replace(/{{domainNameCamel}}/g, domainNameCamel)
-      .replace(/{{entityClassName}}/g, entityClassName);
+      .replace(/{{domainNameCamel}}/g, domainNameCamel);
 
     fs.writeFileSync(entityFilePath, content, { encoding: 'utf8' });
 
-    spinner.succeed(logCreated(entityClassName, path.relative(cwd, entityFilePath)));
+    spinner.succeed(logCreated(entityClassName, relativePath));
   } catch (error: unknown) {
     spinner.fail(logFailure(entityClassName));
     throw error;
