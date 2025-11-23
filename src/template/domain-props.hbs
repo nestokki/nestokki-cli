@@ -1,0 +1,31 @@
+interface {{domainNamePascal}}Pk {
+  idx: number;
+}
+
+interface {{domainNamePascal}}RequiredProps {
+  required: string;
+}
+
+interface {{domainNamePascal}}NullableProps {
+  nullable: string | null;
+}
+
+interface {{domainNamePascal}}DefaultProps {
+  updatedAt: Date;
+  createdAt: Date;
+}
+
+interface {{domainNamePascal}}RelationProps {
+  // manyToOne?: ManyToOneDomain | null;
+  // oneToMany?: readonly OneToManyDomain[];
+}
+
+export type {{domainNamePascal}}DomainProps = {{domainNamePascal}}Pk &
+  {{domainNamePascal}}RequiredProps &
+  {{domainNamePascal}}NullableProps &
+  {{domainNamePascal}}DefaultProps &
+  {{domainNamePascal}}RelationProps;
+
+export type {{domainNamePascal}}CreateProps = {{domainNamePascal}}RequiredProps & {{domainNamePascal}}NullableProps;
+
+export type {{domainNamePascal}}UpdateProps = Partial<{{domainNamePascal}}RequiredProps & {{domainNamePascal}}NullableProps>;
