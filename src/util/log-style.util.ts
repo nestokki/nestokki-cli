@@ -40,7 +40,7 @@ export const logSkippedApi = (names: string[], relativePath: string): string => 
 export const logUpdated = (names: string[], relativePath: string): string => {
   const status = chalk.yellow.bold('UPDATED');
   const targetName = [chalk.blueBright(names[0]), chalk.blueBright(names[1])];
-  const description = chalk.yellow('with');
+  const description = chalk.yellow('to import');
   const targetPath = chalk.gray(relativePath);
   return `${status} ${targetName[0]} ${description} ${targetName[1]} ${targetPath}`;
 };
