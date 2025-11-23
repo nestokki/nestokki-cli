@@ -34,7 +34,7 @@ export class {{domainClassName}} {
 
   async find{{domainNamePascal}}ByIdx(idx: number): Promise<{{domainNamePascal}}Domain> {
     const {{domainNameCamel}} = await this.{{domainNameCamel}}Repository.find{{domainNamePascal}}ByIdx(idx);
-    if (!{{domainNameCamel}}) throw new NotFoundException('{{domainNameCamel}} not found');
+    if (!{{domainNameCamel}}) throw new NotFoundException('{{domainNameWords}} not found');
     return {{domainNameCamel}};
   }
 
@@ -44,7 +44,7 @@ export class {{domainClassName}} {
 
   async find{{domainNamePascal}}Model(idx: number): Promise<{{domainNamePascal}}Domain> {
     const {{domainNameCamel}} = await this.{{domainNameCamel}}Repository.find{{domainNamePascal}}ModelByIdxWithRelations(idx);
-    if (!{{domainNameCamel}}) throw new NotFoundException('{{domainNameCamel}} not found');
+    if (!{{domainNameCamel}}) throw new NotFoundException('{{domainNameWords}} not found');
     return {{domainNameCamel}};
   }
   
@@ -54,6 +54,6 @@ export class {{domainClassName}} {
 
   async throwIf{{domainNamePascal}}ExistsByUnique(idx: number): Promise<void> {
     const {{domainNameCamel}} = await this.{{domainNameCamel}}Repository.find{{domainNamePascal}}ByIdx(idx);
-    if ({{domainNameCamel}}) throw new ConflictException('{{domainNameCamel}} already exists');
+    if ({{domainNameCamel}}) throw new ConflictException('{{domainNameWords}} already exists');
   }
 }
