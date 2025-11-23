@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
-@Entity('{{tableNameSnake}}')
+@Entity('{{domainNameSnake}}')
 export class {{entityClassName}} {
   @PrimaryGeneratedColumn({
     name: 'idx',
@@ -17,11 +17,11 @@ export class {{entityClassName}} {
   // @JoinColumn({
   //  name: 'many_to_one_idx',
   //  referencedColumnName: 'idx',
-  //  foreignKeyConstraintName: 'FK_IDX_{{tableNameSnake}}_many_to_one_idx',
+  //  foreignKeyConstraintName: 'FK_IDX_{{domainNameSnake}}_many_to_one_idx',
   // })
   // manyToOne: ManyToOneEntity;
 
-  // @OneToMany(() => OneToManyEntity, (oneToMany) => oneToMany.{{tableNameSnake}})
+  // @OneToMany(() => OneToManyEntity, (oneToMany) => oneToMany.{{domainNameCamel}})
   // oneToMany: OneToManyEntity[];
 
   @Column('varchar', {
