@@ -10,6 +10,20 @@ export class {{entityClassName}} {
   })
   idx: number;
 
+  // @ManyToOne(() => ManyToOneEntity, {
+  //  onDelete: 'SET NULL',
+  //  onUpdate: 'CASCADE',
+  // })
+  // @JoinColumn({
+  //  name: 'many_to_one_idx',
+  //  referencedColumnName: 'idx',
+  //  foreignKeyConstraintName: 'FK_IDX_{{tableNameSnake}}_many_to_one_idx',
+  // })
+  // manyToOne: ManyToOneEntity;
+
+  // @OneToMany(() => OneToManyEntity, (oneToMany) => oneToMany.{{tableNameSnake}})
+  // oneToMany: OneToManyEntity[];
+
   @Column('varchar', {
     name: 'required',
     comment: 'Required Column',
