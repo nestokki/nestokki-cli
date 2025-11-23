@@ -28,7 +28,7 @@ export const generateDomain = (domainName: string): void => {
       return;
     }
 
-    const templatePath = path.join(__dirname, '../../template/entity.hbs');
+    const templatePath = path.join(__dirname, '../../template/domain.hbs');
     const template = fs.readFileSync(templatePath, 'utf8');
 
     const content = template
