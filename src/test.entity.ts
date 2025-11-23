@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity('user')
 export class UserEntity {
@@ -9,6 +9,20 @@ export class UserEntity {
     comment: 'PK',
   })
   idx!: number;
+
+  @ManyToOne(() => ManyToOneEntity, {
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn({
+    name: 'many_to_one_idx',
+    referencedColumnName: 'idx',
+    foreignKeyConstraintName: 'FK_IDX_user_many_to_one_idx',
+  })
+  manyToOne!: ManyToOneEntity;
+
+  @OneToMany(() => OneToManyEntity, (oneToMany) => oneToMany.user)
+  oneToMany!: OneToManyEntity[];
 
   @Column('varchar', {
     name: 'required',
