@@ -8,9 +8,9 @@ export const generateFeatureModule = (domainName: string): void => {
   const domainNamePascal = toPascalCase(domainName);
   const domainNameKebab = toKebabCase(domainName);
 
-  const domainClassName = `${domainNamePascal}Module`;
+  const featureModuleClassName = `${domainNamePascal}Module`;
 
-  const spinner = ora(`Generating for ${domainClassName}...\n`).start();
+  const spinner = ora(`Generating for ${featureModuleClassName}...\n`).start();
 
   try {
     const cwd = process.cwd();
@@ -23,7 +23,7 @@ export const generateFeatureModule = (domainName: string): void => {
     const relativePath = path.relative(cwd, moduleFilePath);
 
     if (fs.existsSync(moduleFilePath)) {
-      spinner.info(logSkipped(domainClassName, relativePath));
+      spinner.info(logSkipped(featureModuleClassName, relativePath));
       return;
     }
 
@@ -31,15 +31,15 @@ export const generateFeatureModule = (domainName: string): void => {
     const template = fs.readFileSync(templatePath, 'utf8');
 
     const content = template
-      .replace(/{{domainClassName}}/g, domainClassName)
+      .replace(/{{featureModuleClassName}}/g, featureModuleClassName)
       .replace(/{{domainNamePascal}}/g, domainNamePascal)
       .replace(/{{domainNameKebab}}/g, domainNameKebab);
 
     fs.writeFileSync(moduleFilePath, content, { encoding: 'utf8' });
 
-    spinner.succeed(logCreated(domainClassName, relativePath));
+    spinner.succeed(logCreated(featureModuleClassName, relativePath));
   } catch (error: unknown) {
-    spinner.fail(logFailure(domainClassName));
+    spinner.fail(logFailure(featureModuleClassName));
     throw error;
   }
 };

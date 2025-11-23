@@ -8,10 +8,10 @@ export const generateApiModule = (domainName: string): void => {
   const domainNamePascal = toPascalCase(domainName);
   const domainNameKebab = toKebabCase(domainName);
 
-  const rootClassName = 'ApiModule';
-  const domainClassName = `${domainNamePascal}Module`;
+  const rootModuleClassName = 'ApiModule';
+  const featureModuleClassName = `${domainNamePascal}Module`;
 
-  const spinner = ora(`Generating for ${rootClassName}...\n`).start();
+  const spinner = ora(`Generating for ${rootModuleClassName}...\n`).start();
 
   try {
     const cwd = process.cwd();
@@ -26,12 +26,12 @@ export const generateApiModule = (domainName: string): void => {
     if (fs.existsSync(moduleFilePath)) {
       let apiModuleFile = fs.readFileSync(moduleFilePath, 'utf8');
 
-      if (apiModuleFile.includes(domainClassName)) {
-        spinner.info(logSkippedApi([domainClassName, rootClassName], relativePath));
+      if (apiModuleFile.includes(featureModuleClassName)) {
+        spinner.info(logSkippedApi([featureModuleClassName, rootModuleClassName], relativePath));
         return;
       }
 
-      const importLine = `import { ${domainClassName} } from './${domainNameKebab}/${domainNameKebab}.module';`;
+      const importLine = `import { ${featureModuleClassName} } from './${domainNameKebab}/${domainNameKebab}.module';`;
 
       const lastImportMatch = apiModuleFile.match(/(^import .+$)/gm);
       if (lastImportMatch && lastImportMatch.length > 0) {
@@ -48,14 +48,14 @@ export const generateApiModule = (domainName: string): void => {
           .map((s: string) => s.trim())
           .filter(Boolean);
 
-        if (!items.includes(domainClassName)) items.push(domainClassName);
+        if (!items.includes(featureModuleClassName)) items.push(featureModuleClassName);
 
         return `imports: [${items.join(', ')}]`;
       });
 
       fs.writeFileSync(moduleFilePath, apiModuleFile, 'utf8');
 
-      spinner.succeed(logUpdated([rootClassName, domainClassName], relativePath));
+      spinner.succeed(logUpdated([rootModuleClassName, featureModuleClassName], relativePath));
 
       return;
     }
@@ -64,15 +64,15 @@ export const generateApiModule = (domainName: string): void => {
     const template = fs.readFileSync(templatePath, 'utf8');
 
     const content = template
-      .replace(/{{rootClassName}}/g, rootClassName)
+      .replace(/{{rootModuleClassName}}/g, rootModuleClassName)
       .replace(/{{domainNamePascal}}/g, domainNamePascal)
       .replace(/{{domainNameKebab}}/g, domainNameKebab);
 
     fs.writeFileSync(moduleFilePath, content, { encoding: 'utf8' });
 
-    spinner.succeed(logCreated(rootClassName, relativePath));
+    spinner.succeed(logCreated(rootModuleClassName, relativePath));
   } catch (error: unknown) {
-    spinner.fail(logFailure(domainClassName));
+    spinner.fail(logFailure(featureModuleClassName));
     throw error;
   }
 };
