@@ -10,6 +10,19 @@ export class {{entityClassName}} {
   })
   idx: number;
 
+  @Column('varchar', {
+    name: 'required',
+    comment: 'Required Column',
+  })
+  required: string;
+
+  @Column('varchar', {
+    name: 'required',
+    nullable: true,
+    comment: 'Nullable Column',
+  })
+  nullable: string | null;
+
   @Column('timestamp', {
     name: 'updated_at',
     onUpdate: 'CURRENT_TIMESTAMP',
