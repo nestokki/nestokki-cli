@@ -12,7 +12,7 @@ const mapManyToOne = <T>(v: T | null | undefined, fn: (x: T) => any) => (isNil(v
 const mapOneToMany = <T>(v: readonly T[] | undefined, fn: (x: T) => any) =>
   isNil(v) ? v : v.map(fn);
 
-export class {{domainNamePascal}}Mapper {
+export class {{mapperClassName}} {
   /** Entity -> Domain */
   static toDomain(entity: {{domainNamePascal}}Entity): {{domainNamePascal}}Domain {
     const props: {{domainNamePascal}}DomainProps = {
