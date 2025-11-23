@@ -67,7 +67,7 @@ program
       case GenerationCategory.FEATURE:
         try {
           const { domainName } = await handleFeatureDomainName();
-          const { layerTypeList } = await handleFeatureLayerType();
+          const { layerTypeList } = await handleFeatureLayerType(domainName);
 
           if (layerTypeList.includes(LayerCategory.MODULE)) {
             generateApiModule(domainName);

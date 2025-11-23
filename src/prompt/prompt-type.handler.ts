@@ -63,14 +63,16 @@ export const handleFeatureDomainName = async (): Promise<InputDomainNameResponse
   ]);
 };
 
-export const handleFeatureLayerType = async (): Promise<SelectLayerTypeResponse> => {
+export const handleFeatureLayerType = async (
+  domainName: string,
+): Promise<SelectLayerTypeResponse> => {
   return await inquirer.prompt<SelectLayerTypeResponse>([
     {
       type: 'checkbox',
       name: 'layerTypeList',
       message: 'Which layer would you like to generate?',
       loop: false,
-      choices: getFeatureLayerTypeChoices(),
+      choices: getFeatureLayerTypeChoices(domainName),
       validate: (choices: SelectedChoices[]) => {
         if (!choices.length) return '😥 You must select at least one layer type.';
         if (!choices.some((c) => c.value === LayerCategory.MODULE))

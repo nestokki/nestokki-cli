@@ -22,9 +22,9 @@ export const getDatabaseOrmTypeChoices = (): CheckableChoices[] => {
   ];
 };
 
-export const getFeatureLayerTypeChoices = (): CheckableChoices[] => {
+export const getFeatureLayerTypeChoices = (domainName: string): CheckableChoices[] => {
   return [
-    { name: 'Module (api, feature)', value: LayerCategory.MODULE, checked: true },
+    { name: `Module (api, ${domainName})`, value: LayerCategory.MODULE, checked: true },
     { name: 'Domain (domain, props, service)', value: LayerCategory.DOMAIN },
     { name: 'Infrastructure (entity, mapper, repository)', value: LayerCategory.INFRASTRUCTURE },
     { name: 'Application (use-case)', value: LayerCategory.APPLICATION },
