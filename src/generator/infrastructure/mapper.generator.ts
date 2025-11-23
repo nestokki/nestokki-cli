@@ -20,7 +20,7 @@ export const generateMapper = (domainName: string): void => {
 
     fs.mkdirSync(mapperDir, { recursive: true });
 
-    const domainFilePath = path.join(mapperDir, `${domainNameKebab}.domain.ts`);
+    const domainFilePath = path.join(mapperDir, `${domainNameKebab}.mapper.ts`);
     const relativePath = path.relative(cwd, domainFilePath);
 
     if (fs.existsSync(domainFilePath)) {
