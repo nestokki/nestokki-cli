@@ -12,7 +12,7 @@ declare enum PageLimit {
 /*******************************************************/
 
 @Injectable()
-export class {{domainClassName}} {
+export class {{serviceClassName}} {
   constructor(private readonly {{domainNameCamel}}Repository: {{domainNamePascal}}Repository) {}
 
   async create{{domainNamePascal}}(required: string, nullable: string | null): Promise<void> {

@@ -16,7 +16,7 @@ declare enum PageLimit {
 /*******************************************************/
 
 @Injectable()
-export class {{domainClassName}} {
+export class {{repositoryClassName}} {
   constructor(@InjectRepository({{domainNamePascal}}Entity) private readonly typeOrm: Repository<{{domainNamePascal}}Entity>) {}
 
   private repository(manager?: EntityManager): Repository<{{domainNamePascal}}Entity> {
