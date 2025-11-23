@@ -13,6 +13,12 @@ import {
   handleFeatureLayerType,
   handleGenerationType,
 } from './prompt/prompt-type.handler';
+import { generateDomain } from './generator/domain/domain.generator';
+import { generateEntity } from './generator/infrastructure/entity.generator';
+import { generatePropsInterface } from './generator/domain/props-interface.generator';
+import { generateService } from './generator/domain/service.generator';
+import { generateMapper } from './generator/infrastructure/mapper.generator';
+import { generateRepository } from './generator/infrastructure/repository.generator';
 
 const program = new Command();
 const version = pkg.version ?? '1.0.0';
@@ -68,9 +74,17 @@ program
             generateFeatureModule(domainName);
           }
 
-          // if (layerTypeList.includes('api-module')) generateApiModule(domainName);
-          // if (layerTypeList.includes('feature-module')) generateFeatureModule(domainName);
-          // if (layerTypeList.includes('entity')) generateEntity(domainName);
+          if (layerTypeList.includes(LayerCategory.DOMAIN)) {
+            generatePropsInterface(domainName);
+            generateDomain(domainName);
+            generateService(domainName);
+          }
+
+          if (layerTypeList.includes(LayerCategory.INFRASTRUCTURE)) {
+            generateEntity(domainName);
+            generateMapper(domainName);
+            generateRepository(domainName);
+          }
 
           logSuccess(domainName, layerTypeList);
         } catch (error: unknown) {
