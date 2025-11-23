@@ -32,4 +32,4 @@ export type UserDomainProps = UserPk &
 
 export type UserCreateProps = UserRequiredProps & UserNullableProps;
 
-export type UserUpdateProps = Partial<UserRequiredProps> & Partial<UserNullableProps>;
+export type UserUpdateProps = Partial<UserRequiredProps & UserNullableProps>;
