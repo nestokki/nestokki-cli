@@ -1,4 +1,4 @@
-import { UserCreateProps, UserDomainProps, UserUpdateProps } from './test-domain.props';
+import { UserCreateProps, UserDomainProps, UserUpdateProps } from './test-props.interface';
 
 /** Example domain types (remove these in real use!) */
 type ManyToOneDomain = {};

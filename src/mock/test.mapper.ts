@@ -1,4 +1,4 @@
-import { UserDomainProps, UserUpdateProps } from './test-domain.props';
+import { UserDomainProps, UserUpdateProps } from './test-props.interface';
 import { UserDomain } from './test.domain';
 import { UserEntity } from './test.entity';
 
@@ -21,8 +21,8 @@ export class UserMapper {
       nullable: entity.nullable,
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
-      manyToOne: mapManyToOne(entity.manyToOne, ManyToOneMapper.toDomain),
-      oneToMany: mapOneToMany(entity.oneToMany, OneToManyMapper.toDomain),
+      // manyToOne: mapManyToOne(entity.manyToOne, ManyToOneMapper.toDomain),
+      // oneToMany: mapOneToMany(entity.oneToMany, OneToManyMapper.toDomain),
     };
 
     return UserDomain.fromEntity(props);
