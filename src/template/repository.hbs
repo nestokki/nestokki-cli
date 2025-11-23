@@ -37,8 +37,8 @@ export class {{domainClassName}} {
 
   async find{{domainNamePascal}}ByIdx(idx: number, manager?: EntityManager): Promise<{{domainNamePascal}}Domain | null> {
     const entity = await this.repository()
-      .createQueryBuilder('{{domainNameKebab}}')
-      .where('{{domainNameKebab}}.idx = :idx', { idx })
+      .createQueryBuilder('{{domainNameCamel}}')
+      .where('{{domainNameCamel}}.idx = :idx', { idx })
       .getOne();
 
     return entity && {{domainNamePascal}}Mapper.toDomain(entity);
@@ -46,8 +46,8 @@ export class {{domainClassName}} {
 
   async find{{domainNamePascal}}List(page: number, limit: PageLimit): Promise<[{{domainNamePascal}}Domain[], number]> {
     const [entities, total] = await this.repository()
-      .createQueryBuilder('{{domainNameKebab}}')
-      .orderBy('{{domainNameKebab}}.createdAt', 'DESC')
+      .createQueryBuilder('{{domainNameCamel}}')
+      .orderBy('{{domainNameCamel}}.createdAt', 'DESC')
       .skip((page - 1) * limit)
       .take(limit)
       .getManyAndCount();
@@ -57,9 +57,9 @@ export class {{domainClassName}} {
 
   async find{{domainNamePascal}}ModelByIdxWithRelations(idx: number): Promise<{{domainNamePascal}}Domain | null> {
     const entity = await this.repository()
-      .createQueryBuilder('{{domainNameKebab}}')
-      .leftJoinAndSelect('{{domainNameKebab}}.oneToMany', 'oneToMany')
-      .where('{{domainNameKebab}}.idx = :idx', { idx })
+      .createQueryBuilder('{{domainNameCamel}}')
+      .leftJoinAndSelect('{{domainNameCamel}}.oneToMany', 'oneToMany')
+      .where('{{domainNameCamel}}.idx = :idx', { idx })
       .getOne();
 
     return entity && {{domainNamePascal}}Mapper.toDomain(entity);
@@ -70,9 +70,9 @@ export class {{domainClassName}} {
     limit: PageLimit,
   ): Promise<[{{domainNamePascal}}Domain[], number]> {
     const [entities, total] = await this.repository()
-      .createQueryBuilder('{{domainNameKebab}}')
-      .leftJoinAndSelect('{{domainNameKebab}}.oneToMany', 'oneToMany')
-      .orderBy('{{domainNameKebab}}.createdAt', 'DESC')
+      .createQueryBuilder('{{domainNameCamel}}')
+      .leftJoinAndSelect('{{domainNameCamel}}.oneToMany', 'oneToMany')
+      .orderBy('{{domainNameCamel}}.createdAt', 'DESC')
       .skip((page - 1) * limit)
       .take(limit)
       .getManyAndCount();
