@@ -1,0 +1,82 @@
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, EntityManager } from 'typeorm';
+import { {{domainNamePascal}}Domain } from '../domain/model/{{domainNameKebab}}.domain';
+import { {{domainNamePascal}}UpdateProps } from './test-props.interface';
+import { {{domainNamePascal}}Entity } from './{{domainNameKebab}}.entity';
+import { {{domainNamePascal}}Mapper } from './{{domainNameKebab}}.mapper';
+
+/** Pagination limit type (remove these in real use!) */
+declare enum PageLimit {
+  PER_PAGE_10 = 10,
+  PER_PAGE_20 = 20,
+  PER_PAGE_50 = 50,
+  PER_PAGE_100 = 100,
+}
+/*******************************************************/
+
+@Injectable()
+export class {{domainClassName}} {
+  constructor(@InjectRepository({{domainNamePascal}}Entity) private readonly typeOrm: Repository<{{domainNamePascal}}Entity>) {}
+
+  private repository(manager?: EntityManager): Repository<{{domainNamePascal}}Entity> {
+    return manager ? manager.getRepository({{domainNamePascal}}Entity) : this.typeOrm;
+  }
+
+  async create{{domainNamePascal}}(domain: {{domainNamePascal}}Domain, manager?: EntityManager): Promise<void> {
+    await this.repository().save({{domainNamePascal}}Mapper.toEntity(domain));
+  }
+
+  async update{{domainNamePascal}}(idx: number, props: {{domainNamePascal}}UpdateProps, manager?: EntityManager): Promise<void> {
+    await this.repository().update({ idx }, {{domainNamePascal}}Mapper.toPartialEntity(props));
+  }
+
+  async remove{{domainNamePascal}}(idx: number, manager?: EntityManager): Promise<void> {
+    await this.repository().delete({ idx });
+  }
+
+  async find{{domainNamePascal}}ByIdx(idx: number, manager?: EntityManager): Promise<{{domainNamePascal}}Domain | null> {
+    const entity = await this.repository()
+      .createQueryBuilder('{{domainNameKebab}}')
+      .where('{{domainNameKebab}}.idx = :idx', { idx })
+      .getOne();
+
+    return entity && {{domainNamePascal}}Mapper.toDomain(entity);
+  }
+
+  async find{{domainNamePascal}}List(page: number, limit: PageLimit): Promise<[{{domainNamePascal}}Domain[], number]> {
+    const [entities, total] = await this.repository()
+      .createQueryBuilder('{{domainNameKebab}}')
+      .orderBy('{{domainNameKebab}}.createdAt', 'DESC')
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
+
+    return [entities.map({{domainNamePascal}}Mapper.toDomain), total];
+  }
+
+  async find{{domainNamePascal}}ModelByIdxWithRelations(idx: number): Promise<{{domainNamePascal}}Domain | null> {
+    const entity = await this.repository()
+      .createQueryBuilder('{{domainNameKebab}}')
+      .leftJoinAndSelect('{{domainNameKebab}}.oneToMany', 'oneToMany')
+      .where('{{domainNameKebab}}.idx = :idx', { idx })
+      .getOne();
+
+    return entity && {{domainNamePascal}}Mapper.toDomain(entity);
+  }
+
+  async find{{domainNamePascal}}ModelListWithRelations(
+    page: number,
+    limit: PageLimit,
+  ): Promise<[{{domainNamePascal}}Domain[], number]> {
+    const [entities, total] = await this.repository()
+      .createQueryBuilder('{{domainNameKebab}}')
+      .leftJoinAndSelect('{{domainNameKebab}}.oneToMany', 'oneToMany')
+      .orderBy('{{domainNameKebab}}.createdAt', 'DESC')
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
+
+    return [entities.map({{domainNamePascal}}Mapper.toDomain), total];
+  }
+}
