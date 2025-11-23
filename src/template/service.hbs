@@ -13,10 +13,10 @@ declare enum PageLimit {
 
 @Injectable()
 export class {{domainClassName}} {
-  constructor(private readonly {{domainNameKebab}}Repository: {{domainNamePascal}}Repository) {}
+  constructor(private readonly {{domainNameCamel}}Repository: {{domainNamePascal}}Repository) {}
 
   async create{{domainNamePascal}}(required: string, nullable: string | null): Promise<void> {
-    await this.{{domainNameKebab}}Repository.create{{domainNamePascal}}({{domainNamePascal}}Domain.create({ required, nullable }));
+    await this.{{domainNameCamel}}Repository.create{{domainNamePascal}}({{domainNamePascal}}Domain.create({ required, nullable }));
   }
 
   async update{{domainNamePascal}}(
@@ -25,35 +25,35 @@ export class {{domainClassName}} {
     required?: string,
     nullable?: string | null,
   ): Promise<void> {
-    await this.{{domainNameKebab}}Repository.update{{domainNamePascal}}(idx, {{domainNamePascal}}Domain.update(domain, { required, nullable }));
+    await this.{{domainNameCamel}}Repository.update{{domainNamePascal}}(idx, {{domainNamePascal}}Domain.update(domain, { required, nullable }));
   }
 
   async remove{{domainNamePascal}}(idx: number): Promise<void> {
-    await this.{{domainNameKebab}}Repository.remove{{domainNamePascal}}(idx);
+    await this.{{domainNameCamel}}Repository.remove{{domainNamePascal}}(idx);
   }
 
   async find{{domainNamePascal}}ByIdx(idx: number): Promise<{{domainNamePascal}}Domain> {
-    const {{domainNameKebab}} = await this.{{domainNameKebab}}Repository.find{{domainNamePascal}}ByIdx(idx);
-    if (!{{domainNameKebab}}) throw new NotFoundException('{{domainNameKebab}} not found');
-    return {{domainNameKebab}};
+    const {{domainNameCamel}} = await this.{{domainNameCamel}}Repository.find{{domainNamePascal}}ByIdx(idx);
+    if (!{{domainNameCamel}}) throw new NotFoundException('{{domainNameCamel}} not found');
+    return {{domainNameCamel}};
   }
 
   async find{{domainNamePascal}}List(page: number, limit: PageLimit): Promise<[{{domainNamePascal}}Domain[], number]> {
-    return await this.{{domainNameKebab}}Repository.find{{domainNamePascal}}List(page, limit);
+    return await this.{{domainNameCamel}}Repository.find{{domainNamePascal}}List(page, limit);
   }
 
   async find{{domainNamePascal}}Model(idx: number): Promise<{{domainNamePascal}}Domain> {
-    const {{domainNameKebab}} = await this.{{domainNameKebab}}Repository.find{{domainNamePascal}}ModelByIdxWithRelations(idx);
-    if (!{{domainNameKebab}}) throw new NotFoundException('{{domainNameKebab}} not found');
-    return {{domainNameKebab}};
+    const {{domainNameCamel}} = await this.{{domainNameCamel}}Repository.find{{domainNamePascal}}ModelByIdxWithRelations(idx);
+    if (!{{domainNameCamel}}) throw new NotFoundException('{{domainNameCamel}} not found');
+    return {{domainNameCamel}};
   }
   
   async find{{domainNamePascal}}ModelList(page: number, limit: PageLimit): Promise<[{{domainNamePascal}}Domain[], number]> {
-    return await this.{{domainNameKebab}}Repository.find{{domainNamePascal}}ModelListWithRelations(page, limit);
+    return await this.{{domainNameCamel}}Repository.find{{domainNamePascal}}ModelListWithRelations(page, limit);
   }
 
   async throwIf{{domainNamePascal}}ExistsByUnique(idx: number): Promise<void> {
-    const {{domainNameKebab}} = await this.{{domainNameKebab}}Repository.find{{domainNamePascal}}ByIdx(idx);
-    if ({{domainNameKebab}}) throw new ConflictException('{{domainNameKebab}} already exists');
+    const {{domainNameCamel}} = await this.{{domainNameCamel}}Repository.find{{domainNamePascal}}ByIdx(idx);
+    if ({{domainNameCamel}}) throw new ConflictException('{{domainNameCamel}} already exists');
   }
 }
