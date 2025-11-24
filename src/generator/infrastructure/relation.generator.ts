@@ -289,7 +289,9 @@ const updateRelationProps = (
   importPath: string,
 ): void => {
   let content = fs.readFileSync(filePath, 'utf8');
-  const relationInterface = new RegExp(`interface\\s+${toPascalCase(baseModule)}RelationProps\\s*{`);
+  const relationInterface = new RegExp(
+    `interface\\s+${toPascalCase(baseModule)}RelationProps\\s*{`,
+  );
   if (!relationInterface.test(content)) {
     throw new Error(`RelationProps interface not found in ${filePath}`);
   }
@@ -297,8 +299,7 @@ const updateRelationProps = (
   content = content
     .split('\n')
     .filter(
-      (line) =>
-        !line.trim().startsWith('// manyToOne') && !line.trim().startsWith('// oneToMany'),
+      (line) => !line.trim().startsWith('// manyToOne') && !line.trim().startsWith('// oneToMany'),
     )
     .join('\n');
 
@@ -310,7 +311,10 @@ const updateRelationProps = (
   );
   if (interfaceIndex === -1) throw new Error(`RelationProps interface not found in ${filePath}`);
 
-  const relationLine = `  ${propertyName}?: ${getPropsType(relationType, `${targetDomain}Domain`)};`;
+  const relationLine = `  ${propertyName}?: ${getPropsType(
+    relationType,
+    `${targetDomain}Domain`,
+  )};`;
 
   // avoid duplicate
   const alreadyHas = lines.some((line) => line.includes(`${propertyName}?:`));
@@ -332,8 +336,7 @@ const updateDomainGetter = (
     .split('\n')
     .filter(
       (line) =>
-        !line.trim().startsWith('// get manyToOne') &&
-        !line.trim().startsWith('// get oneToMany'),
+        !line.trim().startsWith('// get manyToOne') && !line.trim().startsWith('// get oneToMany'),
     )
     .join('\n');
 
@@ -347,13 +350,23 @@ const updateDomainGetter = (
   const getter = `  get ${propertyName}(): ${getGetterReturnType(
     relationType,
     `${targetDomain}Domain`,
-  )} {\n    return this.props.${propertyName};\n  }\n`;
+  )} {\n    return this.props.${propertyName};\n  }\n\n`;
 
-  const insertIndex = content.indexOf('private toProps');
-  if (insertIndex === -1) throw new Error(`toProps method not found in ${filePath}`);
+  const createdAtIdx = content.indexOf('get createdAt');
+  let insertIndex = -1;
+  if (createdAtIdx !== -1) {
+    const closeBraceIdx = content.indexOf('}', createdAtIdx);
+    if (closeBraceIdx !== -1) {
+      const afterClose = content.indexOf('\n', closeBraceIdx);
+      insertIndex = afterClose !== -1 ? afterClose + 1 : closeBraceIdx + 1;
+    }
+  }
+  if (insertIndex === -1) {
+    insertIndex = content.lastIndexOf('}');
+    if (insertIndex === -1) throw new Error(`Class closing brace not found in ${filePath}`);
+  }
 
-  const updated =
-    content.slice(0, insertIndex) + getter + content.slice(insertIndex);
+  const updated = content.slice(0, insertIndex) + getter + content.slice(insertIndex);
 
   fs.writeFileSync(filePath, updated, { encoding: 'utf8' });
 };
@@ -371,8 +384,7 @@ const updateMapper = (
     .split('\n')
     .filter(
       (line) =>
-        !line.trim().startsWith('// manyToOne:') &&
-        !line.trim().startsWith('// oneToMany:'),
+        !line.trim().startsWith('// manyToOne:') && !line.trim().startsWith('// oneToMany:'),
     )
     .join('\n');
 
@@ -384,14 +396,21 @@ const updateMapper = (
     throw new Error(`props object not found in mapper: ${filePath}`);
   }
 
+  const lineStart = content.lastIndexOf('\n', propsStart) + 1;
+  const indentMatch = content.slice(lineStart, propsStart).match(/^\s*/);
+  const indent = indentMatch ? indentMatch[0] : '';
+
   const before = content.slice(0, propsEnd);
-  const after = content.slice(propsEnd);
+  const after = content.slice(propsEnd + 2); // skip existing };
 
   const mappingFn = getMappingFunction(relationType);
   const relationLine = `      ${propertyName}: ${mappingFn}(entity.${propertyName}, ${targetMapper}.toDomain),`;
 
   if (!before.includes(`${propertyName}:`)) {
-    content = `${before}\n${relationLine}${after}`;
+    const beforeTrimmed = before.replace(/\s+$/, '');
+    const beforeWithComma = beforeTrimmed.endsWith(',') ? beforeTrimmed : `${beforeTrimmed},`;
+    const closingLine = `\n${indent}};`;
+    content = `${beforeWithComma}\n${relationLine}${closingLine}${after}`;
   }
 
   fs.writeFileSync(filePath, content, { encoding: 'utf8' });
@@ -449,7 +468,9 @@ export const generateRelation = (config: RelationConfig): void => {
     const normalizedImportToTarget = importToTarget.startsWith('.')
       ? importToTarget
       : `./${importToTarget}`;
-    const normalizedImportToBase = importToBase.startsWith('.') ? importToBase : `./${importToBase}`;
+    const normalizedImportToBase = importToBase.startsWith('.')
+      ? importToBase
+      : `./${importToBase}`;
 
     updatedBase = ensureEntityImport(updatedBase, targetEntity, normalizedImportToTarget);
     if (updatedTarget !== targetContent) {
@@ -622,12 +643,8 @@ export const generateRelation = (config: RelationConfig): void => {
     fs.writeFileSync(basePath, updatedBase, { encoding: 'utf8' });
     fs.writeFileSync(targetPath, updatedTarget, { encoding: 'utf8' });
 
-    if (logs.length) {
-      spinner.succeed(logs[0]);
-      logs.slice(1).forEach((msg) => console.log(msg));
-    } else {
-      spinner.succeed('Relation generation completed');
-    }
+    if (logs.length) logs.forEach((msg) => spinner.succeed(msg));
+    else spinner.succeed('Relation generation completed');
   } catch (error: unknown) {
     spinner.fail(logFailure(`${baseModule} relation`));
     throw error;
