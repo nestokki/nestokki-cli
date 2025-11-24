@@ -1,12 +1,24 @@
 import inquirer from 'inquirer';
-import { LayerCategory } from '../common/enum';
-import { getFeatureLayerTypeChoices, getGenerationTypeChoices } from './prompt-type.indicator';
+import { LayerCategory, RelationCategory } from '../common/enum';
+import {
+  getFeatureLayerTypeChoices,
+  getGenerationTypeChoices,
+  getOnDeleteChoices,
+  getRelationBaseModuleChoices,
+  getRelationTargetModuleChoices,
+  getRelationTypeChoices,
+} from './prompt-type.indicator';
 import {
   InputDomainNameResponse,
   SelectLayerTypeResponse,
   GenerationType,
   SelectedChoices,
+  SelectBaseModuleResponse,
+  SelectTargetModuleResponse,
+  SelectRelationTypeResponse,
+  RelationOptionsResponse,
 } from '../common/interface';
+import { pluralize, toCamelCase, toSnakeCase } from '../util/convert-case.util';
 
 export const handleGenerationType = async (): Promise<GenerationType> => {
   return await inquirer.prompt<GenerationType>([
@@ -60,20 +72,138 @@ export const handleFeatureLayerType = async (
   ]);
 };
 
-// export const handleDatabaseOrmType = async (): Promise<SelectOrmTypeResponse> => {
-//   return await inquirer.prompt<SelectOrmTypeResponse>([
-//     {
-//       type: 'checkbox',
-//       name: 'ormTypeList',
-//       message: 'Which orm would you like to generate?',
-//       loop: false,
-//       choices: getDatabaseOrmTypeChoices(),
-//       validate: (choices: SelectedChoices[]) => {
-//         if (!choices.length) return '😥 You must select at least one orm type.';
-//         if (!choices.some((c) => c.value === OrmCategory.MODULE))
-//           return '😥 Module (database) is a required selection.';
-//         return true;
-//       },
-//     },
-//   ]);
-// };
+export const handleRelationBaseModule = async (
+  modules: string[],
+): Promise<SelectBaseModuleResponse> => {
+  return await inquirer.prompt<SelectBaseModuleResponse>([
+    {
+      type: 'list',
+      name: 'baseModule',
+      message: 'Which module should the relation be added to? (base module)',
+      loop: false,
+      choices: getRelationBaseModuleChoices(modules),
+      validate: (choices: string) => {
+        if (!choices) return '😥 You must select one module.';
+        return true;
+      },
+    },
+  ]);
+};
+
+export const handleRelationTargetModule = async (
+  modules: string[],
+  base: string,
+): Promise<SelectTargetModuleResponse> => {
+  return await inquirer.prompt<SelectTargetModuleResponse>([
+    {
+      type: 'list',
+      name: 'targetModule',
+      message: 'Which module should it relate to? (target module)',
+      loop: false,
+      choices: getRelationTargetModuleChoices(modules, base),
+      validate: (choices: string) => {
+        if (!choices) return '😥 You must select one module.';
+        return true;
+      },
+    },
+  ]);
+};
+
+export const handleRelationType = async (): Promise<SelectRelationTypeResponse> => {
+  return inquirer.prompt<SelectRelationTypeResponse>([
+    {
+      type: 'list',
+      name: 'relationType',
+      message: 'Select relation type',
+      choices: getRelationTypeChoices(),
+      validate: (choices: string) => {
+        if (!choices) return '😥 You must select one relation type.';
+        return true;
+      },
+    },
+  ]);
+};
+
+export const handleRelationOptions = async ({
+  baseModule,
+  targetModule,
+  relationType,
+}: {
+  baseModule: string;
+  targetModule: string;
+  relationType: RelationCategory;
+}): Promise<RelationOptionsResponse> => {
+  const camelRegex = /^[a-z][a-zA-Z0-9]*$/;
+  const snakeRegex = /^[a-z][a-z0-9_]*$/;
+
+  return inquirer.prompt<RelationOptionsResponse>([
+    {
+      type: 'input',
+      name: 'propertyName',
+      message: 'Property name on base entity:',
+      default: toCamelCase(targetModule),
+      validate: (input: string) => {
+        if (!input.trim()) return '😥 Property name is required.';
+        if (!camelRegex.test(input.trim())) return '😥 camelCase only. (e.g. user, boardComment)';
+        return true;
+      },
+    },
+    {
+      type: 'input',
+      name: 'fkColumn',
+      message: 'FK column name:',
+      default: `${toSnakeCase(targetModule)}_idx`,
+      validate: (input: string) => {
+        if (!input.trim()) return '😥 FK column name is required.';
+        if (!snakeRegex.test(input.trim())) return '😥 snake_case only. (e.g. user, board_comment)';
+        return true;
+      },
+    },
+    {
+      type: 'confirm',
+      name: 'lazy',
+      message: 'Use lazy loading?',
+      default: false,
+    },
+    {
+      type: 'confirm',
+      name: 'nullable',
+      message: 'Allow null?',
+      default: false,
+    },
+    {
+      type: 'confirm',
+      name: 'cascade',
+      message: 'Enable cascade?',
+      default: false,
+    },
+    {
+      type: 'list',
+      name: 'onDelete',
+      message: 'onDelete option:',
+      choices: getOnDeleteChoices(),
+    },
+    {
+      type: 'confirm',
+      name: 'bidirectional',
+      message: `Also add inverse side on ${targetModule}?`,
+      default: relationType !== RelationCategory.ONE_TO_ONE, // 일단 예시 기본값
+    },
+    {
+      type: 'input',
+      name: 'inversePropertyName',
+      message: 'Inverse property name on target:',
+      default:
+        relationType === RelationCategory.ONE_TO_MANY // OneToMany일땐 복수형 아니면 끝에다가 List
+          ? pluralize(toCamelCase(baseModule))
+          : toCamelCase(baseModule),
+      when: (answer) => answer.bidirectional,
+      validate: (input: string) => {
+        if (!input.trim()) return '😥 Inverse property name is required.';
+        if (!camelRegex.test(input.trim()))
+          return '😥 camelCase only. (e.g. users, boardCommentList)';
+        return true;
+      },
+    },
+  ]);
+};
