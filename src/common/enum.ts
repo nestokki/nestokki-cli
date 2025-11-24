@@ -7,16 +7,21 @@ export enum GenerationCategory {
   RELATION = 'relation',
 }
 
-// export enum OrmCategory {
-//   MODULE = 'module',
-//   TYPEORM = 'typeorm',
-//   PRISMA = 'prisma',
-// }
-
 export enum LayerCategory {
   MODULE = 'module',
   DOMAIN = 'domain',
   INFRASTRUCTURE = 'infrastructure',
   APPLICATION = 'application',
   PRESENTATION = 'presentation',
+}
+
+export enum RelationCategory {
+  MANY_TO_ONE = 'manyToOne',
+  ONE_TO_MANY = 'oneToMany',
+  ONE_TO_ONE = 'oneToOne',
+}
+export enum OnDeleteCategory {
+  CASCADE = 'cascade',
+  SET_NULL = 'setNull',
+  RESTRICT = 'restrict',
 }
