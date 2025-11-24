@@ -4,7 +4,7 @@ import ora from 'ora';
 import { RelationCategory, OnDeleteCategory } from '../../common/enum';
 import { RelationConfig, RelationOptionsResponse } from '../../common/interface';
 import { toCamelCase, toPascalCase } from '../../util/convert-case.util';
-import { logCreated, logFailure } from '../../util/log-style.util';
+import { logFailure, logUpdatedRelation } from '../../util/log-style.util';
 
 const ensureImports = (content: string, symbols: string[]): string => {
   if (!symbols.length) return content;
@@ -228,10 +228,12 @@ export const generateRelation = (config: RelationConfig): void => {
     fs.writeFileSync(targetPath, updatedTarget, { encoding: 'utf8' });
 
     spinner.succeed(
-      logCreated(`${baseEntity} - ${config.relationType}`, path.relative(cwd, basePath)),
+      logUpdatedRelation(baseEntity, path.relative(cwd, basePath), 'relation added'),
     );
     if (updatedTarget !== targetContent) {
-      spinner.succeed(logCreated(`${targetEntity} inverse`, path.relative(cwd, targetPath)));
+      spinner.succeed(
+        logUpdatedRelation(`${targetEntity} inverse`, path.relative(cwd, targetPath), 'relation added'),
+      );
     }
   } catch (error: unknown) {
     spinner.fail(logFailure(`${baseModule} relation`));

@@ -45,6 +45,18 @@ export const logUpdated = (names: string[], relativePath: string): string => {
   return `${status} ${targetName[0]} ${description} ${targetName[1]} ${targetPath}`;
 };
 
+export const logUpdatedRelation = (
+  name: string,
+  relativePath: string,
+  action: string,
+): string => {
+  const status = chalk.yellow.bold('UPDATED');
+  const targetName = chalk.blueBright(name);
+  const description = chalk.yellow(action);
+  const targetPath = chalk.gray(relativePath);
+  return `${status} ${targetName} ${description} ${targetPath}`;
+};
+
 export const logSuccess = (target: string, typeList: string[]): void => {
   console.log(`\n🚀 Successfully generated for 👉 ${target}`);
   console.log(`😀 You generate: [ ${typeList.join(', ')} ]\n`);
