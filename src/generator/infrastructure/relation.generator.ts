@@ -59,6 +59,26 @@ const insertSnippet = (content: string, snippet: string): string => {
   return `${prefix}\n${snippet}\n${suffix}`;
 };
 
+const ensureEntityImport = (content: string, entityName: string, importPath: string): string => {
+  const importRegex = new RegExp(
+    `import\\s+{\\s*${entityName}\\s*}\\s+from\\s+['"]${importPath}['"]`,
+  );
+  if (importRegex.test(content)) return content;
+
+  const lines = content.split('\n');
+  const importLine = `import { ${entityName} } from '${importPath}';`;
+  let lastImportIndex = -1;
+
+  lines.forEach((line, idx) => {
+    if (/^import\s.+from\s+['"].+['"];?/.test(line.trim())) lastImportIndex = idx;
+  });
+
+  if (lastImportIndex >= 0) lines.splice(lastImportIndex + 1, 0, importLine);
+  else lines.unshift(importLine);
+
+  return lines.join('\n');
+};
+
 const buildPropertyType = (
   relationType: RelationCategory,
   targetEntity: string,
@@ -241,8 +261,30 @@ export const generateRelation = (config: RelationConfig): void => {
     const baseContent = fs.readFileSync(basePath, 'utf8');
     const targetContent = fs.readFileSync(targetPath, 'utf8');
 
-    const updatedBase = addBaseSide(baseContent, config, baseEntity, targetEntity);
-    const updatedTarget = addInverseSide(targetContent, config, baseEntity, targetEntity);
+    let updatedBase = addBaseSide(baseContent, config, baseEntity, targetEntity);
+    let updatedTarget = addInverseSide(targetContent, config, baseEntity, targetEntity);
+
+    const baseDir = path.dirname(basePath);
+    const targetDir = path.dirname(targetPath);
+
+    const importToTarget = path
+      .relative(baseDir, targetPath)
+      .replace(/\\/g, '/')
+      .replace(/\.ts$/, '');
+    const importToBase = path
+      .relative(targetDir, basePath)
+      .replace(/\\/g, '/')
+      .replace(/\.ts$/, '');
+
+    const normalizedImportToTarget = importToTarget.startsWith('.')
+      ? importToTarget
+      : `./${importToTarget}`;
+    const normalizedImportToBase = importToBase.startsWith('.') ? importToBase : `./${importToBase}`;
+
+    updatedBase = ensureEntityImport(updatedBase, targetEntity, normalizedImportToTarget);
+    if (updatedTarget !== targetContent) {
+      updatedTarget = ensureEntityImport(updatedTarget, baseEntity, normalizedImportToBase);
+    }
 
     fs.writeFileSync(basePath, updatedBase, { encoding: 'utf8' });
     fs.writeFileSync(targetPath, updatedTarget, { encoding: 'utf8' });
