@@ -46,8 +46,8 @@ export const toCamelCase = (name: string): string => {
     .join('');
 };
 
-export const toWords = (name: string): string =>
-  name
+export const toWords = (name: string): string => {
+  return name
     .replace(/[_\s]+/g, '-')
     .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
     .replace(/([A-Z])([A-Z][a-z])/g, '$1-$2')
@@ -55,3 +55,12 @@ export const toWords = (name: string): string =>
     .filter(Boolean)
     .map((part) => part.toLowerCase())
     .join(' ');
+};
+
+export const pluralize = (word: string): string => {
+  if (word.endsWith('y') && !/[aeiou]y$/i.test(word)) return `${word.slice(0, -1)}ies`;
+  if (/(s|x|z|ch|sh)$/i.test(word)) return `${word}es`;
+  if (word.endsWith('f')) return `${word.slice(0, -1)}ves`;
+  if (word.endsWith('fe')) return `${word.slice(0, -2)}ves`;
+  return `${word}s`;
+};
