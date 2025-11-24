@@ -1,14 +1,13 @@
 import fs from 'fs';
 import path from 'path';
 import ora from 'ora';
-import { toPascalCase, toKebabCase, toSnakeCase, toCamelCase } from '../../util/convert-case.util';
+import { toPascalCase, toKebabCase, toSnakeCase } from '../../util/convert-case.util';
 import { logCreated, logFailure, logSkipped } from '../../util/log-style.util';
 
 export const generateEntity = (domainName: string): void => {
   const domainNamePascal = toPascalCase(domainName);
   const domainNameKebab = toKebabCase(domainName);
   const domainNameSnake = toSnakeCase(domainName);
-  const domainNameCamel = toCamelCase(domainName);
 
   const entityClassName = `${domainNamePascal}Entity`;
 
@@ -35,8 +34,7 @@ export const generateEntity = (domainName: string): void => {
 
     const content = template
       .replace(/{{entityClassName}}/g, entityClassName)
-      .replace(/{{domainNameSnake}}/g, domainNameSnake)
-      .replace(/{{domainNameCamel}}/g, domainNameCamel);
+      .replace(/{{domainNameSnake}}/g, domainNameSnake);
 
     fs.writeFileSync(entityFilePath, content, { encoding: 'utf8' });
 
