@@ -8,14 +8,8 @@ import { CheckableChoices, Choices } from '../common/interface';
 
 export const getGenerationTypeChoices = (): Choices[] => {
   return [
-    {
-      name: 'Feature Module',
-      value: GenerationCategory.FEATURE,
-    },
-    {
-      name: 'Entity Relation',
-      value: GenerationCategory.RELATION,
-    },
+    { name: 'Feature Module', value: GenerationCategory.FEATURE },
+    { name: 'Entity Relation', value: GenerationCategory.RELATION },
   ];
 };
 
