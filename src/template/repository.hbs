@@ -54,29 +54,4 @@ export class {{repositoryClassName}} {
 
     return [entities.map({{domainNamePascal}}Mapper.toDomain), total];
   }
-
-  async find{{domainNamePascal}}ModelByIdxWithRelations(idx: number): Promise<{{domainNamePascal}}Domain | null> {
-    const entity = await this.repository()
-      .createQueryBuilder('{{domainNameCamel}}')
-      .leftJoinAndSelect('{{domainNameCamel}}.oneToMany', 'oneToMany')
-      .where('{{domainNameCamel}}.idx = :idx', { idx })
-      .getOne();
-
-    return entity && {{domainNamePascal}}Mapper.toDomain(entity);
-  }
-
-  async find{{domainNamePascal}}ModelListWithRelations(
-    page: number,
-    limit: PageLimit,
-  ): Promise<[{{domainNamePascal}}Domain[], number]> {
-    const [entities, total] = await this.repository()
-      .createQueryBuilder('{{domainNameCamel}}')
-      .leftJoinAndSelect('{{domainNameCamel}}.oneToMany', 'oneToMany')
-      .orderBy('{{domainNameCamel}}.createdAt', 'DESC')
-      .skip((page - 1) * limit)
-      .take(limit)
-      .getManyAndCount();
-
-    return [entities.map({{domainNamePascal}}Mapper.toDomain), total];
-  }
 }
