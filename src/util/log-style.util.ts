@@ -49,12 +49,14 @@ export const logUpdatedRelation = (
   name: string,
   relativePath: string,
   action: string,
+  detail?: string,
 ): string => {
   const status = chalk.yellow.bold('UPDATED');
   const targetName = chalk.blueBright(name);
   const description = chalk.yellow(action);
+  const detailPart = detail ? ` ${chalk.blueBright(detail)}` : '';
   const targetPath = chalk.gray(relativePath);
-  return `${status} ${targetName} ${description} ${targetPath}`;
+  return `${status} ${targetName} ${description}${detailPart} ${targetPath}`;
 };
 
 export const logSuccess = (target: string, typeList: string[]): void => {

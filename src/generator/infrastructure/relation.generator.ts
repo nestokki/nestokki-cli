@@ -92,6 +92,30 @@ const buildRelationDecorator = (
   }
 };
 
+const getInverseRelationType = (relationType: RelationCategory): RelationCategory => {
+  switch (relationType) {
+    case RelationCategory.MANY_TO_ONE:
+      return RelationCategory.ONE_TO_MANY;
+    case RelationCategory.ONE_TO_MANY:
+      return RelationCategory.MANY_TO_ONE;
+    case RelationCategory.ONE_TO_ONE:
+    default:
+      return RelationCategory.ONE_TO_ONE;
+  }
+};
+
+const getDecoratorName = (relationType: RelationCategory): string => {
+  switch (relationType) {
+    case RelationCategory.MANY_TO_ONE:
+      return 'ManyToOne';
+    case RelationCategory.ONE_TO_MANY:
+      return 'OneToMany';
+    case RelationCategory.ONE_TO_ONE:
+    default:
+      return 'OneToOne';
+  }
+};
+
 const addBaseSide = (
   content: string,
   config: RelationConfig,
@@ -147,12 +171,7 @@ const addInverseSide = (
 
   const baseProp = options.propertyName;
   const inverseProp = options.inversePropertyName;
-  const inverseType =
-    relationType === RelationCategory.MANY_TO_ONE
-      ? RelationCategory.ONE_TO_MANY
-      : relationType === RelationCategory.ONE_TO_MANY
-      ? RelationCategory.MANY_TO_ONE
-      : RelationCategory.ONE_TO_ONE;
+  const inverseType = getInverseRelationType(relationType);
 
   const propertyType = buildPropertyType(inverseType, baseEntity, options.lazy);
   const baseVar = toCamelCase(config.baseModule);
@@ -193,6 +212,7 @@ export const generateRelation = (config: RelationConfig): void => {
   const { baseModule, targetModule } = config;
   const baseEntity = `${toPascalCase(baseModule)}Entity`;
   const targetEntity = `${toPascalCase(targetModule)}Entity`;
+  const inverseTypeForLog = getInverseRelationType(config.relationType);
 
   const spinner = ora(`Generating relation for ${baseEntity}...\n`).start();
 
@@ -228,11 +248,21 @@ export const generateRelation = (config: RelationConfig): void => {
     fs.writeFileSync(targetPath, updatedTarget, { encoding: 'utf8' });
 
     spinner.succeed(
-      logUpdatedRelation(baseEntity, path.relative(cwd, basePath), 'relation added'),
+      logUpdatedRelation(
+        baseEntity,
+        path.relative(cwd, basePath),
+        'relation added',
+        getDecoratorName(config.relationType),
+      ),
     );
     if (updatedTarget !== targetContent) {
       spinner.succeed(
-        logUpdatedRelation(`${targetEntity} inverse`, path.relative(cwd, targetPath), 'relation added'),
+        logUpdatedRelation(
+          `${targetEntity} inverse`,
+          path.relative(cwd, targetPath),
+          'relation added',
+          getDecoratorName(inverseTypeForLog),
+        ),
       );
     }
   } catch (error: unknown) {
