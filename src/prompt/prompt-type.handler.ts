@@ -1,15 +1,10 @@
 import inquirer from 'inquirer';
-import { LayerCategory, OrmCategory } from '../common/enum';
-import {
-  getDatabaseOrmTypeChoices,
-  getFeatureLayerTypeChoices,
-  getGenerationTypeChoices,
-} from './prompt-type.indicator';
+import { LayerCategory } from '../common/enum';
+import { getFeatureLayerTypeChoices, getGenerationTypeChoices } from './prompt-type.indicator';
 import {
   InputDomainNameResponse,
   SelectLayerTypeResponse,
   GenerationType,
-  SelectOrmTypeResponse,
   SelectedChoices,
 } from '../common/interface';
 
@@ -22,24 +17,6 @@ export const handleGenerationType = async (): Promise<GenerationType> => {
       choices: getGenerationTypeChoices(),
       validate: (choices: string[]) => {
         if (!choices.length) return '😥 You must select at least one generation type.';
-        return true;
-      },
-    },
-  ]);
-};
-
-export const handleDatabaseOrmType = async (): Promise<SelectOrmTypeResponse> => {
-  return await inquirer.prompt<SelectOrmTypeResponse>([
-    {
-      type: 'checkbox',
-      name: 'ormTypeList',
-      message: 'Which orm would you like to generate?',
-      loop: false,
-      choices: getDatabaseOrmTypeChoices(),
-      validate: (choices: SelectedChoices[]) => {
-        if (!choices.length) return '😥 You must select at least one orm type.';
-        if (!choices.some((c) => c.value === OrmCategory.MODULE))
-          return '😥 Module (database) is a required selection.';
         return true;
       },
     },
@@ -82,3 +59,21 @@ export const handleFeatureLayerType = async (
     },
   ]);
 };
+
+// export const handleDatabaseOrmType = async (): Promise<SelectOrmTypeResponse> => {
+//   return await inquirer.prompt<SelectOrmTypeResponse>([
+//     {
+//       type: 'checkbox',
+//       name: 'ormTypeList',
+//       message: 'Which orm would you like to generate?',
+//       loop: false,
+//       choices: getDatabaseOrmTypeChoices(),
+//       validate: (choices: SelectedChoices[]) => {
+//         if (!choices.length) return '😥 You must select at least one orm type.';
+//         if (!choices.some((c) => c.value === OrmCategory.MODULE))
+//           return '😥 Module (database) is a required selection.';
+//         return true;
+//       },
+//     },
+//   ]);
+// };

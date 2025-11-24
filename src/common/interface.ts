@@ -1,4 +1,4 @@
-import { GenerationCategory, LayerCategory, OrmCategory } from './enum';
+import { GenerationCategory, LayerCategory } from './enum';
 
 export interface Choices {
   name: string;
@@ -22,9 +22,9 @@ export interface GenerationType {
   generationType: GenerationCategory;
 }
 
-export interface SelectOrmTypeResponse {
-  ormTypeList: OrmCategory[];
-}
+// export interface SelectOrmTypeResponse {
+//   ormTypeList: OrmCategory[];
+// }
 
 export interface InputDomainNameResponse {
   domainName: string;

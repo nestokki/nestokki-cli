@@ -3,15 +3,15 @@ export enum Commands {
 }
 
 export enum GenerationCategory {
-  DATABASE = 'database',
   FEATURE = 'feature',
+  RELATION = 'relation',
 }
 
-export enum OrmCategory {
-  MODULE = 'module',
-  TYPEORM = 'typeorm',
-  PRISMA = 'prisma',
-}
+// export enum OrmCategory {
+//   MODULE = 'module',
+//   TYPEORM = 'typeorm',
+//   PRISMA = 'prisma',
+// }
 
 export enum LayerCategory {
   MODULE = 'module',

@@ -1,24 +1,16 @@
-import { GenerationCategory, LayerCategory, OrmCategory } from '../common/enum';
+import { GenerationCategory, LayerCategory } from '../common/enum';
 import { CheckableChoices, Choices } from '../common/interface';
 
 export const getGenerationTypeChoices = (): Choices[] => {
   return [
     {
-      name: 'Database Module (requires dependency e.g. @nestjs/typeorm )',
-      value: GenerationCategory.DATABASE,
-    },
-    {
-      name: 'Feature Module (requires dependency e.g. @nestjs/typeorm, typeorm)',
+      name: 'Feature Module',
       value: GenerationCategory.FEATURE,
     },
-  ];
-};
-
-export const getDatabaseOrmTypeChoices = (): CheckableChoices[] => {
-  return [
-    { name: 'Module (database)', value: OrmCategory.MODULE, checked: true },
-    { name: 'typeorm (options-factory)', value: OrmCategory.TYPEORM },
-    { name: 'prisma (options-factory)', value: OrmCategory.PRISMA },
+    {
+      name: 'Entity Relation',
+      value: GenerationCategory.RELATION,
+    },
   ];
 };
 
@@ -31,6 +23,14 @@ export const getFeatureLayerTypeChoices = (domainName: string): CheckableChoices
     { name: 'Presentation (controller)', value: LayerCategory.PRESENTATION },
   ];
 };
+
+// export const getDatabaseOrmTypeChoices = (): CheckableChoices[] => {
+//   return [
+//     { name: 'Module (database)', value: OrmCategory.MODULE, checked: true },
+//     { name: 'typeorm (options-factory)', value: OrmCategory.TYPEORM },
+//     { name: 'prisma (options-factory)', value: OrmCategory.PRISMA },
+//   ];
+// };
 
 // export const getFeatureLayerTypeChoices = (): {
 //   name: string;
