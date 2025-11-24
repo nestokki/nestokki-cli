@@ -152,7 +152,10 @@ export const handleRelationOptions = async ({
       type: 'input',
       name: 'fkColumn',
       message: 'FK column name:',
-      default: `${toSnakeCase(targetModule)}_idx`,
+      default: () =>
+        relationType === RelationCategory.ONE_TO_MANY
+          ? `${toSnakeCase(baseModule)}_idx`
+          : `${toSnakeCase(targetModule)}_idx`,
       validate: (input: string) => {
         if (!input.trim()) return '😥 FK column name is required.';
         if (!snakeRegex.test(input.trim())) return '😥 snake_case only. (e.g. user, board_comment)';
