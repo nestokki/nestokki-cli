@@ -59,6 +59,26 @@ const insertSnippet = (content: string, snippet: string): string => {
   return `${prefix}\n${snippet}\n${suffix}`;
 };
 
+const ensureNamedImport = (content: string, symbol: string, importPath: string): string => {
+  const importRegex = new RegExp(
+    `import\\s+{[^}]*\\b${symbol}\\b[^}]*}\\s+from\\s+['"]${importPath}['"]`,
+  );
+  if (importRegex.test(content)) return content;
+
+  const lines = content.split('\n');
+  const importLine = `import { ${symbol} } from '${importPath}';`;
+  let lastImportIndex = -1;
+
+  lines.forEach((line, idx) => {
+    if (/^import\s.+from\s+['"].+['"];?/.test(line.trim())) lastImportIndex = idx;
+  });
+
+  if (lastImportIndex >= 0) lines.splice(lastImportIndex + 1, 0, importLine);
+  else lines.unshift(importLine);
+
+  return lines.join('\n');
+};
+
 const ensureEntityImport = (content: string, entityName: string, importPath: string): string => {
   const importRegex = new RegExp(
     `import\\s+{\\s*${entityName}\\s*}\\s+from\\s+['"]${importPath}['"]`,
@@ -134,6 +154,38 @@ const getDecoratorName = (relationType: RelationCategory): string => {
     default:
       return 'OneToOne';
   }
+};
+
+const getPropsType = (relationType: RelationCategory, targetDomain: string): string => {
+  switch (relationType) {
+    case RelationCategory.ONE_TO_MANY:
+      return `readonly ${targetDomain}[]`;
+    case RelationCategory.MANY_TO_ONE:
+    case RelationCategory.ONE_TO_ONE:
+    default:
+      return `${targetDomain} | null`;
+  }
+};
+
+const getGetterReturnType = (relationType: RelationCategory, targetDomain: string): string => {
+  switch (relationType) {
+    case RelationCategory.ONE_TO_MANY:
+      return `readonly ${targetDomain}[] | undefined`;
+    case RelationCategory.MANY_TO_ONE:
+    case RelationCategory.ONE_TO_ONE:
+    default:
+      return `${targetDomain} | null | undefined`;
+  }
+};
+
+const getMappingFunction = (relationType: RelationCategory): 'mapManyToOne' | 'mapOneToMany' => {
+  return relationType === RelationCategory.ONE_TO_MANY ? 'mapOneToMany' : 'mapManyToOne';
+};
+
+const normalizeImportPath = (fromDir: string, toFile: string): string => {
+  const relative = path.relative(fromDir, toFile).replace(/\\/g, '/').replace(/\.ts$/, '');
+  if (relative.startsWith('.')) return relative;
+  return `./${relative}`;
 };
 
 const addBaseSide = (
@@ -228,6 +280,123 @@ const addInverseSide = (
   return insertSnippet(updatedImports, snippet);
 };
 
+const updateRelationProps = (
+  filePath: string,
+  baseModule: string,
+  relationType: RelationCategory,
+  propertyName: string,
+  targetDomain: string,
+  importPath: string,
+): void => {
+  let content = fs.readFileSync(filePath, 'utf8');
+  const relationInterface = new RegExp(`interface\\s+${toPascalCase(baseModule)}RelationProps\\s*{`);
+  if (!relationInterface.test(content)) {
+    throw new Error(`RelationProps interface not found in ${filePath}`);
+  }
+
+  content = content
+    .split('\n')
+    .filter(
+      (line) =>
+        !line.trim().startsWith('// manyToOne') && !line.trim().startsWith('// oneToMany'),
+    )
+    .join('\n');
+
+  content = ensureNamedImport(content, `${targetDomain}Domain`, importPath);
+
+  const lines = content.split('\n');
+  const interfaceIndex = lines.findIndex((line) =>
+    line.includes(`interface ${toPascalCase(baseModule)}RelationProps`),
+  );
+  if (interfaceIndex === -1) throw new Error(`RelationProps interface not found in ${filePath}`);
+
+  const relationLine = `  ${propertyName}?: ${getPropsType(relationType, `${targetDomain}Domain`)};`;
+
+  // avoid duplicate
+  const alreadyHas = lines.some((line) => line.includes(`${propertyName}?:`));
+  if (!alreadyHas) lines.splice(interfaceIndex + 1, 0, relationLine);
+
+  fs.writeFileSync(filePath, lines.join('\n'), { encoding: 'utf8' });
+};
+
+const updateDomainGetter = (
+  filePath: string,
+  propertyName: string,
+  relationType: RelationCategory,
+  targetDomain: string,
+  importPath: string,
+): void => {
+  let content = fs.readFileSync(filePath, 'utf8');
+
+  content = content
+    .split('\n')
+    .filter(
+      (line) =>
+        !line.trim().startsWith('// get manyToOne') &&
+        !line.trim().startsWith('// get oneToMany'),
+    )
+    .join('\n');
+
+  content = ensureNamedImport(content, `${targetDomain}Domain`, importPath);
+
+  if (content.includes(`get ${propertyName}()`)) {
+    fs.writeFileSync(filePath, content, { encoding: 'utf8' });
+    return;
+  }
+
+  const getter = `  get ${propertyName}(): ${getGetterReturnType(
+    relationType,
+    `${targetDomain}Domain`,
+  )} {\n    return this.props.${propertyName};\n  }\n`;
+
+  const insertIndex = content.indexOf('private toProps');
+  if (insertIndex === -1) throw new Error(`toProps method not found in ${filePath}`);
+
+  const updated =
+    content.slice(0, insertIndex) + getter + content.slice(insertIndex);
+
+  fs.writeFileSync(filePath, updated, { encoding: 'utf8' });
+};
+
+const updateMapper = (
+  filePath: string,
+  propertyName: string,
+  relationType: RelationCategory,
+  targetMapper: string,
+  importPath: string,
+): void => {
+  let content = fs.readFileSync(filePath, 'utf8');
+
+  content = content
+    .split('\n')
+    .filter(
+      (line) =>
+        !line.trim().startsWith('// manyToOne:') &&
+        !line.trim().startsWith('// oneToMany:'),
+    )
+    .join('\n');
+
+  content = ensureNamedImport(content, targetMapper, importPath);
+
+  const propsStart = content.indexOf('const props');
+  const propsEnd = content.indexOf('};', propsStart);
+  if (propsStart === -1 || propsEnd === -1) {
+    throw new Error(`props object not found in mapper: ${filePath}`);
+  }
+
+  const before = content.slice(0, propsEnd);
+  const after = content.slice(propsEnd);
+
+  const mappingFn = getMappingFunction(relationType);
+  const relationLine = `      ${propertyName}: ${mappingFn}(entity.${propertyName}, ${targetMapper}.toDomain),`;
+
+  if (!before.includes(`${propertyName}:`)) {
+    content = `${before}\n${relationLine}${after}`;
+  }
+
+  fs.writeFileSync(filePath, content, { encoding: 'utf8' });
+};
+
 export const generateRelation = (config: RelationConfig): void => {
   const { baseModule, targetModule } = config;
   const baseEntity = `${toPascalCase(baseModule)}Entity`;
@@ -237,6 +406,7 @@ export const generateRelation = (config: RelationConfig): void => {
   const spinner = ora(`Generating relation for ${baseEntity}...\n`).start();
 
   try {
+    const logs: string[] = [];
     const cwd = process.cwd();
     const basePath = path.join(
       cwd,
@@ -285,11 +455,7 @@ export const generateRelation = (config: RelationConfig): void => {
     if (updatedTarget !== targetContent) {
       updatedTarget = ensureEntityImport(updatedTarget, baseEntity, normalizedImportToBase);
     }
-
-    fs.writeFileSync(basePath, updatedBase, { encoding: 'utf8' });
-    fs.writeFileSync(targetPath, updatedTarget, { encoding: 'utf8' });
-
-    spinner.succeed(
+    logs.push(
       logUpdatedRelation(
         baseEntity,
         path.relative(cwd, basePath),
@@ -297,8 +463,129 @@ export const generateRelation = (config: RelationConfig): void => {
         getDecoratorName(config.relationType),
       ),
     );
-    if (updatedTarget !== targetContent) {
-      spinner.succeed(
+
+    // Domain/props/mapper updates for base
+    const baseDomainDir = path.join(cwd, 'src', 'api', baseModule, 'domain', 'model');
+    const basePropsPath = path.join(baseDomainDir, `${baseModule}-props.interface.ts`);
+    const baseDomainPath = path.join(baseDomainDir, `${baseModule}.domain.ts`);
+    const baseMapperPath = path.join(
+      cwd,
+      'src',
+      'api',
+      baseModule,
+      'infrastructure',
+      `${baseModule}.mapper.ts`,
+    );
+
+    const targetDomainImportPath = normalizeImportPath(
+      baseDomainDir,
+      path.join(cwd, 'src', 'api', targetModule, 'domain', 'model', `${targetModule}.domain.ts`),
+    );
+    const targetMapperImportPath = normalizeImportPath(
+      path.join(cwd, 'src', 'api', baseModule, 'infrastructure'),
+      path.join(cwd, 'src', 'api', targetModule, 'infrastructure', `${targetModule}.mapper.ts`),
+    );
+
+    if (!fs.existsSync(basePropsPath)) throw new Error(`Props file not found: ${basePropsPath}`);
+    if (!fs.existsSync(baseDomainPath)) throw new Error(`Domain file not found: ${baseDomainPath}`);
+    if (!fs.existsSync(baseMapperPath)) throw new Error(`Mapper file not found: ${baseMapperPath}`);
+
+    const targetDomainName = toPascalCase(targetModule);
+    updateRelationProps(
+      basePropsPath,
+      baseModule,
+      config.relationType,
+      config.options.propertyName,
+      targetDomainName,
+      targetDomainImportPath,
+    );
+    updateDomainGetter(
+      baseDomainPath,
+      config.options.propertyName,
+      config.relationType,
+      targetDomainName,
+      targetDomainImportPath,
+    );
+    updateMapper(
+      baseMapperPath,
+      config.options.propertyName,
+      config.relationType,
+      `${targetDomainName}Mapper`,
+      targetMapperImportPath,
+    );
+    logs.push(
+      logUpdatedRelation(
+        `${toPascalCase(baseModule)} props`,
+        path.relative(cwd, basePropsPath),
+        'relation props added',
+        config.options.propertyName,
+      ),
+    );
+    logs.push(
+      logUpdatedRelation(
+        `${toPascalCase(baseModule)} domain`,
+        path.relative(cwd, baseDomainPath),
+        'relation getter added',
+        config.options.propertyName,
+      ),
+    );
+    logs.push(
+      logUpdatedRelation(
+        `${toPascalCase(baseModule)} mapper`,
+        path.relative(cwd, baseMapperPath),
+        'relation mapping added',
+        config.options.propertyName,
+      ),
+    );
+
+    // Domain/props/mapper updates for inverse side
+    if (config.options.bidirectional && config.options.inversePropertyName) {
+      const inverseType = getInverseRelationType(config.relationType);
+      const targetDomainDir = path.join(cwd, 'src', 'api', targetModule, 'domain', 'model');
+      const targetPropsPath = path.join(targetDomainDir, `${targetModule}-props.interface.ts`);
+      const targetDomainPath = path.join(targetDomainDir, `${targetModule}.domain.ts`);
+      const targetMapperPath = path.join(
+        cwd,
+        'src',
+        'api',
+        targetModule,
+        'infrastructure',
+        `${targetModule}.mapper.ts`,
+      );
+
+      const baseDomainImportPath = normalizeImportPath(
+        targetDomainDir,
+        path.join(cwd, 'src', 'api', baseModule, 'domain', 'model', `${baseModule}.domain.ts`),
+      );
+      const baseMapperImportPath = normalizeImportPath(
+        path.join(cwd, 'src', 'api', targetModule, 'infrastructure'),
+        path.join(cwd, 'src', 'api', baseModule, 'infrastructure', `${baseModule}.mapper.ts`),
+      );
+
+      const baseDomainName = toPascalCase(baseModule);
+      updateRelationProps(
+        targetPropsPath,
+        targetModule,
+        inverseType,
+        config.options.inversePropertyName,
+        baseDomainName,
+        baseDomainImportPath,
+      );
+      updateDomainGetter(
+        targetDomainPath,
+        config.options.inversePropertyName,
+        inverseType,
+        baseDomainName,
+        baseDomainImportPath,
+      );
+      updateMapper(
+        targetMapperPath,
+        config.options.inversePropertyName,
+        inverseType,
+        `${baseDomainName}Mapper`,
+        baseMapperImportPath,
+      );
+      logs.push(
         logUpdatedRelation(
           `${targetEntity} inverse`,
           path.relative(cwd, targetPath),
@@ -306,6 +593,40 @@ export const generateRelation = (config: RelationConfig): void => {
           getDecoratorName(inverseTypeForLog),
         ),
       );
+      logs.push(
+        logUpdatedRelation(
+          `${toPascalCase(targetModule)} props`,
+          path.relative(cwd, targetPropsPath),
+          'relation props added',
+          config.options.inversePropertyName,
+        ),
+      );
+      logs.push(
+        logUpdatedRelation(
+          `${toPascalCase(targetModule)} domain`,
+          path.relative(cwd, targetDomainPath),
+          'relation getter added',
+          config.options.inversePropertyName,
+        ),
+      );
+      logs.push(
+        logUpdatedRelation(
+          `${toPascalCase(targetModule)} mapper`,
+          path.relative(cwd, targetMapperPath),
+          'relation mapping added',
+          config.options.inversePropertyName,
+        ),
+      );
+    }
+
+    fs.writeFileSync(basePath, updatedBase, { encoding: 'utf8' });
+    fs.writeFileSync(targetPath, updatedTarget, { encoding: 'utf8' });
+
+    if (logs.length) {
+      spinner.succeed(logs[0]);
+      logs.slice(1).forEach((msg) => console.log(msg));
+    } else {
+      spinner.succeed('Relation generation completed');
     }
   } catch (error: unknown) {
     spinner.fail(logFailure(`${baseModule} relation`));
