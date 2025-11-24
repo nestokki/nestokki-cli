@@ -47,12 +47,6 @@ export class {{domainClassName}} {
   get updatedAt(): Date {
     return this.props.updatedAt;
   }
-  // get manyToOne(): ManyToOneDomain | null | undefined {
-  // return this.props.manyToOne;
-  // }
-  // get oneToMany(): readonly OneToManyDomain[] | undefined {
-  // return this.props.oneToMany;
-  // }
 
   private toProps(): Readonly<{{domainNamePascal}}DomainProps> {
     return { ...this.props };

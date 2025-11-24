@@ -20,9 +20,7 @@ export class {{mapperClassName}} {
       required: entity.required,
       nullable: entity.nullable,
       createdAt: entity.createdAt,
-      updatedAt: entity.updatedAt,
-      // manyToOne: mapManyToOne(entity.manyToOne, ManyToOneMapper.toDomain),
-      // oneToMany: mapOneToMany(entity.oneToMany, OneToManyMapper.toDomain),
+      updatedAt: entity.updatedAt
     };
 
     return {{domainNamePascal}}Domain.fromEntity(props);
