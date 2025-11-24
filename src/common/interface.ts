@@ -1,4 +1,4 @@
-import { GenerationCategory, LayerCategory } from './enum';
+import { GenerationCategory, LayerCategory, OnDeleteCategory, RelationCategory } from './enum';
 
 export interface Choices {
   name: string;
@@ -22,14 +22,37 @@ export interface GenerationType {
   generationType: GenerationCategory;
 }
 
-// export interface SelectOrmTypeResponse {
-//   ormTypeList: OrmCategory[];
-// }
-
 export interface InputDomainNameResponse {
   domainName: string;
 }
 
 export interface SelectLayerTypeResponse {
   layerTypeList: LayerCategory[];
+}
+
+export interface SelectBaseModuleResponse {
+  baseModule: string;
+}
+export interface SelectTargetModuleResponse {
+  targetModule: string;
+}
+export interface SelectRelationTypeResponse {
+  relationType: RelationCategory;
+}
+export interface RelationOptionsResponse {
+  propertyName: string;
+  fkColumn: string;
+  lazy: boolean;
+  nullable: boolean;
+  cascade: boolean;
+  onDelete: OnDeleteCategory;
+  bidirectional: boolean;
+  inversePropertyName?: string;
+}
+
+export interface RelationConfig {
+  baseModule: string;
+  targetModule: string;
+  relationType: RelationCategory;
+  options: RelationOptionsResponse;
 }
