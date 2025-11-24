@@ -41,17 +41,15 @@ export class {{domainClassName}} {
   get nullable(): string | null {
     return this.props.nullable ?? null;
   }
-  get createdAt(): Date {
-    return this.props.createdAt;
-  }
   get updatedAt(): Date {
     return this.props.updatedAt;
   }
-
+  get createdAt(): Date {
+    return this.props.createdAt;
+  }
   private toProps(): Readonly<{{domainNamePascal}}DomainProps> {
     return { ...this.props };
   }
-
   toCreateProps(): Readonly<{{domainNamePascal}}CreateProps> {
     return { ...this.props };
   }
