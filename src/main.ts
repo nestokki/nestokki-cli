@@ -11,6 +11,10 @@ import {
   handleFeatureDomainName,
   handleFeatureLayerType,
   handleGenerationType,
+  handleRelationBaseModule,
+  handleRelationOptions,
+  handleRelationTargetModule,
+  handleRelationType,
 } from './prompt/prompt-type.handler';
 import { generateDomain } from './generator/domain/domain.generator';
 import { generateEntity } from './generator/infrastructure/entity.generator';
@@ -18,6 +22,8 @@ import { generatePropsInterface } from './generator/domain/props-interface.gener
 import { generateService } from './generator/domain/service.generator';
 import { generateMapper } from './generator/infrastructure/mapper.generator';
 import { generateRepository } from './generator/infrastructure/repository.generator';
+import { getModules } from './util/parse-module.util';
+import { generateRelation } from './generator/infrastructure/relation.generator';
 
 const program = new Command();
 const version = pkg.version ?? '1.0.0';
@@ -30,7 +36,7 @@ program
 program
   .command(Commands.GENERATE)
   .description('Interactively select a domain name and files to generate')
-  .argument('[type]', 'Generation type (feature | relation)')
+  .argument('[type]', 'Generation type (e.g. feature, relation)')
   .action(async (type) => {
     let generationCategory: GenerationCategory;
 
@@ -73,12 +79,22 @@ program
         break;
       case GenerationCategory.RELATION:
         try {
+          const modules = getModules();
+          if (!modules.length) {
+            logError(`😥 No selectable modules. you must generate feature module first`);
+            return;
+          }
+          const { baseModule } = await handleRelationBaseModule(modules);
+          const { targetModule } = await handleRelationTargetModule(modules, baseModule);
+          const { relationType } = await handleRelationType();
+          const options = await handleRelationOptions({ baseModule, targetModule, relationType });
+          generateRelation({ baseModule, targetModule, relationType, options });
           return;
         } catch (error: unknown) {
           return handleExit(error, process);
         }
       default:
-        logError(`😥 Unknown Generation type "${type}". (e.g. database, feature)`);
+        logError(`😥 Unknown Generation type "${type}". (e.g. feature, relation)`);
         break;
     }
   });
