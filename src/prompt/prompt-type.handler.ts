@@ -141,7 +141,10 @@ export const handleRelationOptions = async ({
       type: 'input',
       name: 'propertyName',
       message: 'Property name on base entity:',
-      default: toCamelCase(targetModule),
+      default:
+        relationType === RelationCategory.ONE_TO_MANY
+          ? pluralize(toCamelCase(targetModule))
+          : toCamelCase(targetModule),
       validate: (input: string) => {
         if (!input.trim()) return '😥 Property name is required.';
         if (!camelRegex.test(input.trim())) return '😥 camelCase only. (e.g. user, boardComment)';
@@ -197,7 +200,7 @@ export const handleRelationOptions = async ({
       name: 'inversePropertyName',
       message: 'Inverse property name on target:',
       default:
-        relationType === RelationCategory.ONE_TO_MANY // OneToMany일땐 복수형 아니면 끝에다가 List
+        relationType === RelationCategory.MANY_TO_ONE
           ? pluralize(toCamelCase(baseModule))
           : toCamelCase(baseModule),
       when: (answer) => answer.bidirectional,
