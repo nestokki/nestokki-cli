@@ -90,15 +90,28 @@ program
       case GenerationCategory.RELATION:
         try {
           const modules = getModules();
+
           if (!modules.length) {
             logError('😥 No modules available for relations.');
-            logError('👉 You have to generate a feature module first!');
+            logError('👉 You have to generate a feature module(with an entity) first!');
             return;
           }
+
+          if (modules.length < 2) {
+            logError('😥 Self-referential relations are not supported yet.');
+            logError(
+              `👉 You only have "${modules[0]}" registered right now. Please generate another module.`,
+            );
+
+            return;
+          }
+
           const { baseModule } = await handleRelationBaseModule(modules);
           const { targetModule } = await handleRelationTargetModule(modules, baseModule);
           const { relationType } = await handleRelationType();
+
           const options = await handleRelationOptions({ baseModule, targetModule, relationType });
+
           generateRelation({ baseModule, targetModule, relationType, options });
 
           logRelationSuccess(baseModule, targetModule, relationType);
