@@ -24,6 +24,7 @@ import { generateMapper } from './generator/infrastructure/mapper.generator';
 import { generateRepository } from './generator/infrastructure/repository.generator';
 import { getModules } from './util/parse-module.util';
 import { generateRelation } from './generator/infrastructure/relation.generator';
+import { generateUseCase } from './generator/application/use-case.generator';
 
 const program = new Command();
 const version = pkg.version ?? '1.0.0';
@@ -70,6 +71,10 @@ program
             generateEntity(domainName);
             generateMapper(domainName);
             generateRepository(domainName);
+          }
+
+          if (layerTypeList.includes(LayerCategory.APPLICATION)) {
+            generateUseCase(domainName);
           }
 
           logSuccess(domainName, layerTypeList);
