@@ -3,6 +3,7 @@ import path from 'path';
 import ora from 'ora';
 import { toPascalCase, toKebabCase, toSnakeCase } from '../../util/convert-case.util';
 import { logCreated, logFailure, logSkipped } from '../../util/log-style.util';
+import { updateFeatureModule } from '../module/feature-module.updater';
 
 export const generateEntity = (domainName: string): void => {
   const domainNamePascal = toPascalCase(domainName);
@@ -37,6 +38,8 @@ export const generateEntity = (domainName: string): void => {
       .replace(/{{domainNameSnake}}/g, domainNameSnake);
 
     fs.writeFileSync(entityFilePath, content, { encoding: 'utf8' });
+
+    updateFeatureModule(domainName, { addEntity: true });
 
     spinner.succeed(logCreated(entityClassName, relativePath));
   } catch (error: unknown) {
