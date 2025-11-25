@@ -1,15 +1,9 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { {{domainNamePascal}}Controller } from './presentation/{{domainNameKebab}}.controller';
-import { Create{{domainNamePascal}}UseCase } from './application/create-{{domainNameKebab}}.use-case';
-import { {{domainNamePascal}}Service } from './domain/{{domainNameKebab}}.service';
-import { {{domainNamePascal}}Repository } from './infrastructure/{{domainNameKebab}}.repository';
-import { {{domainNamePascal}}Entity } from './infrastructure/{{domainNameKebab}}.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([{{domainNamePascal}}Entity])],
-  controllers: [{{domainNamePascal}}Controller],
-  providers: [Create{{domainNamePascal}}UseCase, {{domainNamePascal}}Service, {{domainNamePascal}}Repository],
-  exports: [{{domainNamePascal}}Service],
+  imports: [],
+  controllers: [],
+  providers: [],
+  exports: [],
 })
 export class {{featureModuleClassName}} {}
