@@ -3,6 +3,7 @@ import path from 'path';
 import ora from 'ora';
 import { toPascalCase, toKebabCase, toCamelCase, toWords } from '../../util/convert-case.util';
 import { logCreated, logFailure, logSkipped } from '../../util/log-style.util';
+import { updateFeatureModule } from '../module/feature-module.updater';
 
 export const generateService = (domainName: string): void => {
   const domainNamePascal = toPascalCase(domainName);
@@ -41,6 +42,8 @@ export const generateService = (domainName: string): void => {
       .replace(/{{domainNameWords}}/g, domainNameWords);
 
     fs.writeFileSync(domainFilePath, content, { encoding: 'utf8' });
+
+    updateFeatureModule(domainName, { addService: true });
 
     spinner.succeed(logCreated(serviceClassName, relativePath));
   } catch (error: unknown) {
