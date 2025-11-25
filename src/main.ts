@@ -25,6 +25,7 @@ import { generateRepository } from './generator/infrastructure/repository.genera
 import { getModules } from './util/parse-module.util';
 import { generateRelation } from './generator/infrastructure/relation.generator';
 import { generateUseCase } from './generator/application/use-case.generator';
+import { generateController } from './generator/presentation/controller.generator';
 
 const program = new Command();
 const version = pkg.version ?? '1.0.0';
@@ -75,6 +76,10 @@ program
 
           if (layerTypeList.includes(LayerCategory.APPLICATION)) {
             generateUseCase(domainName);
+          }
+
+          if (layerTypeList.includes(LayerCategory.PRESENTATION)) {
+            generateController(domainName);
           }
 
           logFeatureSuccess(domainName, layerTypeList);
