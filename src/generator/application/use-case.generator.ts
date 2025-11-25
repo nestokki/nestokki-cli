@@ -22,7 +22,7 @@ export const generateUseCase = (domainName: string): void => {
 
     fs.mkdirSync(useCaseDir, { recursive: true });
 
-    const domainFilePath = path.join(useCaseDir, `find${domainNameKebab}.use-case.ts`);
+    const domainFilePath = path.join(useCaseDir, `find-${domainNameKebab}.use-case.ts`);
     const relativePath = path.relative(cwd, domainFilePath);
 
     if (fs.existsSync(domainFilePath)) {
