@@ -30,15 +30,24 @@ export interface SelectLayerTypeResponse {
   layerTypeList: LayerCategory[];
 }
 
+export interface UpdateOptions {
+  addEntity?: boolean;
+  addService?: boolean;
+  addRepository?: boolean;
+}
+
 export interface SelectBaseModuleResponse {
   baseModule: string;
 }
+
 export interface SelectTargetModuleResponse {
   targetModule: string;
 }
+
 export interface SelectRelationTypeResponse {
   relationType: RelationCategory;
 }
+
 export interface RelationOptionsResponse {
   propertyName: string;
   fkColumn: string;
