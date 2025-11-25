@@ -27,8 +27,8 @@ export const handleGenerationType = async (): Promise<GenerationType> => {
       name: 'generationType',
       message: 'What would you like to generate?',
       choices: getGenerationTypeChoices(),
-      validate: (choices: string[]) => {
-        if (!choices.length) return '😥 You must select at least one generation type.';
+      validate: (choice: string) => {
+        if (!choice) return '😥 You must select at least one generation type.';
         return true;
       },
     },
@@ -82,8 +82,8 @@ export const handleRelationBaseModule = async (
       message: 'Which module should the relation be added to? (base module)',
       loop: false,
       choices: getRelationBaseModuleChoices(modules),
-      validate: (choices: string) => {
-        if (!choices) return '😥 You must select one module.';
+      validate: (choice: string) => {
+        if (!choice) return '😥 You must select one module.';
         return true;
       },
     },
@@ -101,8 +101,8 @@ export const handleRelationTargetModule = async (
       message: 'Which module should it relate to? (target module)',
       loop: false,
       choices: getRelationTargetModuleChoices(modules, base),
-      validate: (choices: string) => {
-        if (!choices) return '😥 You must select one module.';
+      validate: (choice: string) => {
+        if (!choice) return '😥 You must select one module.';
         return true;
       },
     },
@@ -116,8 +116,8 @@ export const handleRelationType = async (): Promise<SelectRelationTypeResponse> 
       name: 'relationType',
       message: 'Select relation type',
       choices: getRelationTypeChoices(),
-      validate: (choices: string) => {
-        if (!choices) return '😥 You must select one relation type.';
+      validate: (choice: string) => {
+        if (!choice) return '😥 You must select one relation type.';
         return true;
       },
     },
