@@ -101,6 +101,7 @@ export const updateFeatureModule = (domainName: string, options: UpdateOptions):
 
   const providers: string[] = [];
   const exportsList: string[] = [];
+  const controllers: string[] = [];
 
   if (options.addService) {
     const serviceName = `${domainPascal}Service`;
@@ -124,8 +125,16 @@ export const updateFeatureModule = (domainName: string, options: UpdateOptions):
     providers.push(useCaseName);
   }
 
+  if (options.addController) {
+    const controllerName = `${domainPascal}Controller`;
+    const controllerImportPath = `./presentation/${domainKebab}.controller`;
+    content = ensureNamedImport(content, controllerName, controllerImportPath);
+    controllers.push(controllerName);
+  }
+
   if (providers.length) content = ensureArrayEntries(content, 'providers', providers);
   if (exportsList.length) content = ensureArrayEntries(content, 'exports', exportsList);
+  if (controllers.length) content = ensureArrayEntries(content, 'controllers', controllers);
 
   fs.writeFileSync(modulePath, content, { encoding: 'utf8' });
 };
