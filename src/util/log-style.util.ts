@@ -59,9 +59,13 @@ export const logUpdatedRelation = (
   return `${status} ${targetName} ${description}${detailPart} ${targetPath}`;
 };
 
-export const logSuccess = (target: string, typeList: string[]): void => {
+export const logFeatureSuccess = (target: string, typeList: string[]): void => {
   console.log(`\n🚀 Successfully generated for 👉 ${target}`);
-  console.log(`😀 You generate: [ ${typeList.join(', ')} ]\n`);
+  console.log(`😀 Generated layers: [ ${typeList.join(', ')} ]\n`);
+};
+
+export const logRelationSuccess = (base: string, target: string, type: string): void => {
+  console.log(`\n🚀 Relation created 👉 ${base} ↔ ${target} (${type})\n`);
 };
 
 export const logError = (message: string): void => {
