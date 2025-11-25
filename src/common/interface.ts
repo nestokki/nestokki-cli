@@ -34,6 +34,7 @@ export interface UpdateOptions {
   addEntity?: boolean;
   addService?: boolean;
   addRepository?: boolean;
+  addUseCase?: boolean;
 }
 
 export interface SelectBaseModuleResponse {
