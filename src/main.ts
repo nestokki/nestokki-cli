@@ -86,7 +86,7 @@ program
         try {
           const modules = getModules();
           if (!modules.length) {
-            logError(`😥 No selectable modules. you must generate feature module first`);
+            logError(`😥 No selectable modules. You have to generate a feature module first`);
             return;
           }
           const { baseModule } = await handleRelationBaseModule(modules);
