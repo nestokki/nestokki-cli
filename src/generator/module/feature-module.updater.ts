@@ -117,6 +117,13 @@ export const updateFeatureModule = (domainName: string, options: UpdateOptions):
     providers.push(repositoryName);
   }
 
+  if (options.addUseCase) {
+    const useCaseName = `Find${domainPascal}UseCase`;
+    const useCaseImportPath = `./application/find-${domainKebab}.use-case`;
+    content = ensureNamedImport(content, useCaseName, useCaseImportPath);
+    providers.push(useCaseName);
+  }
+
   if (providers.length) content = ensureArrayEntries(content, 'providers', providers);
   if (exportsList.length) content = ensureArrayEntries(content, 'exports', exportsList);
 
