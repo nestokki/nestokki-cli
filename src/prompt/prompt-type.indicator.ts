@@ -27,13 +27,13 @@ export const getRelationBaseModuleChoices = (modules: string[]): CheckableChoice
   return modules.map((module) => ({ name: module, value: module }));
 };
 
-export const getRelationTargetModuleChoices = (modules: string[], base: string) => {
+export const getRelationTargetModuleChoices = (modules: string[], base: string): Choices[] => {
   return modules
     .filter((module) => module !== base)
     .map((target) => ({ name: target, value: target }));
 };
 
-export const getRelationTypeChoices = (): CheckableChoices[] => {
+export const getRelationTypeChoices = (): Choices[] => {
   return [
     { name: 'ManyToOne', value: RelationCategory.MANY_TO_ONE },
     { name: 'OneToMany', value: RelationCategory.ONE_TO_MANY },
@@ -41,11 +41,13 @@ export const getRelationTypeChoices = (): CheckableChoices[] => {
   ];
 };
 
-export const getOnDeleteChoices = () => [
-  { name: 'CASCADE', value: OnDeleteCategory.CASCADE },
-  { name: 'SET NULL', value: OnDeleteCategory.SET_NULL },
-  { name: 'RESTRICT', value: OnDeleteCategory.RESTRICT },
-];
+export const getOnDeleteChoices = (): Choices[] => {
+  return [
+    { name: 'CASCADE', value: OnDeleteCategory.CASCADE },
+    { name: 'SET NULL', value: OnDeleteCategory.SET_NULL },
+    { name: 'RESTRICT', value: OnDeleteCategory.RESTRICT },
+  ];
+};
 
 // export const getDatabaseOrmTypeChoices = (): CheckableChoices[] => {
 //   return [
