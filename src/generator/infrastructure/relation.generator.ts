@@ -350,7 +350,7 @@ const updateDomainGetter = (
   const getter = `  get ${propertyName}(): ${getGetterReturnType(
     relationType,
     `${targetDomain}Domain`,
-  )} {\n    return this.props.${propertyName};\n  }\n\n`;
+  )} {\n    return this.props.${propertyName};\n  }\n`;
 
   const createdAtIdx = content.indexOf('get createdAt');
   let insertIndex = -1;
