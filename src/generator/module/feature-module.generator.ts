@@ -30,10 +30,7 @@ export const generateFeatureModule = (domainName: string): void => {
     const templatePath = path.join(__dirname, '../../template/feature-module.hbs');
     const template = fs.readFileSync(templatePath, 'utf8');
 
-    const content = template
-      .replace(/{{featureModuleClassName}}/g, featureModuleClassName)
-      .replace(/{{domainNamePascal}}/g, domainNamePascal)
-      .replace(/{{domainNameKebab}}/g, domainNameKebab);
+    const content = template.replace(/{{featureModuleClassName}}/g, featureModuleClassName);
 
     fs.writeFileSync(moduleFilePath, content, { encoding: 'utf8' });
 
