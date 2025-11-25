@@ -3,6 +3,7 @@ import path from 'path';
 import ora from 'ora';
 import { toPascalCase, toKebabCase, toCamelCase } from '../../util/convert-case.util';
 import { logCreated, logFailure, logSkipped } from '../../util/log-style.util';
+import { updateFeatureModule } from '../module/feature-module.updater';
 
 export const generateRepository = (domainName: string): void => {
   const domainNamePascal = toPascalCase(domainName);
@@ -39,6 +40,8 @@ export const generateRepository = (domainName: string): void => {
       .replace(/{{domainNameCamel}}/g, domainNameCamel);
 
     fs.writeFileSync(domainFilePath, content, { encoding: 'utf8' });
+
+    updateFeatureModule(domainName, { addRepository: true });
 
     spinner.succeed(logCreated(repositoryClassName, relativePath));
   } catch (error: unknown) {
