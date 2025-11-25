@@ -47,6 +47,7 @@ export class {{domainClassName}} {
   get createdAt(): Date {
     return this.props.createdAt;
   }
+  
   private toProps(): Readonly<{{domainNamePascal}}DomainProps> {
     return { ...this.props };
   }
