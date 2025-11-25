@@ -2,7 +2,7 @@
 
 import { Command } from 'commander';
 import pkg from '../package.json';
-import { logError, logSuccess } from './util/log-style.util';
+import { logError, logFeatureSuccess, logRelationSuccess } from './util/log-style.util';
 import { handleExit } from './util/handle-exit.util';
 import { Commands, GenerationCategory, LayerCategory } from './common/enum';
 import { generateApiModule } from './generator/module/api-module.generator';
@@ -77,7 +77,7 @@ program
             generateUseCase(domainName);
           }
 
-          logSuccess(domainName, layerTypeList);
+          logFeatureSuccess(domainName, layerTypeList);
         } catch (error: unknown) {
           return handleExit(error, process);
         }
@@ -94,6 +94,8 @@ program
           const { relationType } = await handleRelationType();
           const options = await handleRelationOptions({ baseModule, targetModule, relationType });
           generateRelation({ baseModule, targetModule, relationType, options });
+
+          logRelationSuccess(baseModule, targetModule, relationType);
           return;
         } catch (error: unknown) {
           return handleExit(error, process);
