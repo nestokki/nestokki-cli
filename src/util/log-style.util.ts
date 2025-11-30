@@ -3,7 +3,7 @@ import chalk from 'chalk';
 export const logFailure = (name: string): string => {
   const status = chalk.red.bold('FAILED');
   const targetName = chalk.blueBright(name);
-  return `${status} to generate ${targetName}`;
+  return ` ${status} to generate ${targetName}`;
 };
 
 export const logConflictError = (name: string, relativePath: string): string => {
@@ -18,7 +18,7 @@ export const logCreated = (name: string, relativePath: string): string => {
   const status = chalk.green.bold('CREATED');
   const targetName = chalk.blueBright(name);
   const targetPath = chalk.gray(relativePath);
-  return `${status} ${targetName} ${targetPath}`;
+  return ` ${status} ${targetName} ${targetPath}`;
 };
 
 export const logSkipped = (name: string, relativePath: string): string => {
@@ -26,7 +26,7 @@ export const logSkipped = (name: string, relativePath: string): string => {
   const targetName = chalk.blueBright(name);
   const description = chalk.magenta('already generated');
   const targetPath = chalk.gray(relativePath);
-  return `${status} ${targetName} ${description} ${targetPath}`;
+  return ` ${status} ${targetName} ${description} ${targetPath}`;
 };
 
 export const logSkippedApi = (names: string[], relativePath: string): string => {
@@ -34,7 +34,7 @@ export const logSkippedApi = (names: string[], relativePath: string): string => 
   const targetName = [chalk.blueBright(names[0]), chalk.blueBright(names[1])];
   const description = chalk.magenta('already registered in');
   const targetPath = chalk.gray(relativePath);
-  return `${status} ${targetName[0]} ${description} ${targetName[1]} ${targetPath}`;
+  return ` ${status} ${targetName[0]} ${description} ${targetName[1]} ${targetPath}`;
 };
 
 export const logUpdated = (names: string[], relativePath: string): string => {
@@ -42,7 +42,7 @@ export const logUpdated = (names: string[], relativePath: string): string => {
   const targetName = [chalk.blueBright(names[0]), chalk.blueBright(names[1])];
   const description = chalk.yellow('to import');
   const targetPath = chalk.gray(relativePath);
-  return `${status} ${targetName[0]} ${description} ${targetName[1]} ${targetPath}`;
+  return ` ${status} ${targetName[0]} ${description} ${targetName[1]} ${targetPath}`;
 };
 
 export const logUpdatedRelation = (
@@ -56,7 +56,7 @@ export const logUpdatedRelation = (
   const description = chalk.yellow(action);
   const detailPart = detail ? ` ${chalk.blueBright(detail)}` : '';
   const targetPath = chalk.gray(relativePath);
-  return `${status} ${targetName} ${description}${detailPart} ${targetPath}`;
+  return ` ${status} ${targetName} ${description}${detailPart} ${targetPath}`;
 };
 
 export const logFeatureSuccess = (target: string, typeList: string[]): void => {
