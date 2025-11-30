@@ -1,0 +1,11 @@
+import { Injectable } from '@nestjs/common';
+import { {{domainNamePascal}}Service } from '../../domain/{{domainNameKebab}}.service';
+
+@Injectable()
+export class Delete{{domainNamePascal}}UseCase {
+  constructor(private readonly {{domainNameCamel}}Service: {{domainNamePascal}}Service) {}
+
+  async execute(idx: number): Promise<void> {
+    return await this.{{domainNameCamel}}Service.delete{{domainNamePascal}}(idx);
+  }
+}

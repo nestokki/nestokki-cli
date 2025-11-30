@@ -119,10 +119,18 @@ export const updateFeatureModule = (domainName: string, options: UpdateOptions):
   }
 
   if (options.addUseCase) {
-    const useCaseName = `Find${domainPascal}UseCase`;
-    const useCaseImportPath = `./application/find-${domainKebab}.use-case`;
-    content = ensureNamedImport(content, useCaseName, useCaseImportPath);
-    providers.push(useCaseName);
+    const useCases = [
+      { name: `Create${domainPascal}UseCase`, importPath: `./application/command/create-${domainKebab}.use-case` },
+      { name: `Update${domainPascal}UseCase`, importPath: `./application/command/update-${domainKebab}.use-case` },
+      { name: `Delete${domainPascal}UseCase`, importPath: `./application/command/delete-${domainKebab}.use-case` },
+      { name: `Find${domainPascal}UseCase`, importPath: `./application/query/find-${domainKebab}.use-case` },
+      { name: `Find${domainPascal}ListUseCase`, importPath: `./application/query/find-${domainKebab}-list.use-case` },
+    ];
+
+    useCases.forEach(({ name, importPath }) => {
+      content = ensureNamedImport(content, name, importPath);
+      providers.push(name);
+    });
   }
 
   if (options.addController) {

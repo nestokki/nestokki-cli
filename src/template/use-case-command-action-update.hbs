@@ -1,0 +1,24 @@
+import { BadRequestException } from '@nestjs/common';
+import { {{domainNamePascal}}UpdateProps } from 'src/api/{{domainNameKebab}}/domain/{{domainNameKebab}}.type';
+
+export class Update{{domainNamePascal}}Command {
+  private constructor(
+    readonly idx: number,
+    private readonly props: {{domainNamePascal}}UpdateProps,
+  ) {}
+
+  static create(idx: number, props: {{domainNamePascal}}UpdateProps): Update{{domainNamePascal}}Command {
+    if (Object.keys(props).length === 0) {
+      throw new BadRequestException('No update fields provided');
+    }
+
+    return new Update{{domainNamePascal}}Command(idx, props);
+  }
+
+  toUpdateProps(): {{domainNamePascal}}UpdateProps {
+    return {
+      required: this.props.required,
+      nullable: this.props.nullable,
+    };
+  }
+}

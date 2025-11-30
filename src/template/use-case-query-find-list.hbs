@@ -1,0 +1,12 @@
+import { Injectable } from '@nestjs/common';
+import { {{domainNamePascal}}Service } from '../../domain/{{domainNameKebab}}.service';
+import { {{domainNamePascal}}Domain } from '../../domain/{{domainNameKebab}}.domain';
+
+@Injectable()
+export class Find{{domainNamePascal}}ListUseCase {
+  constructor(private readonly {{domainNameCamel}}Service: {{domainNamePascal}}Service) {}
+
+  async execute(): Promise<{{domainNamePascal}}Domain[]> {
+    return await this.{{domainNameCamel}}Service.find{{domainNamePascal}}List();
+  }
+}

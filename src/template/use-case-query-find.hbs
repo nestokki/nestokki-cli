@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { {{domainNamePascal}}Service } from '../domain/{{domainNameKebab}}.service';
-import { {{domainNamePascal}}Domain } from '../domain/{{domainNameKebab}}.domain';
+import { {{domainNamePascal}}Service } from '../../domain/{{domainNameKebab}}.service';
+import { {{domainNamePascal}}Domain } from '../../domain/{{domainNameKebab}}.domain';
 
 @Injectable()
-export class Find{{useCaseClassName}} {
+export class Find{{domainNamePascal}}UseCase {
   constructor(private readonly {{domainNameCamel}}Service: {{domainNamePascal}}Service) {}
 
   async execute(idx: number): Promise<{{domainNamePascal}}Domain> {

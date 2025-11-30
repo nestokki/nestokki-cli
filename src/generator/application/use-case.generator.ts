@@ -10,42 +10,86 @@ export const generateUseCase = (domainName: string): void => {
   const domainNameKebab = toKebabCase(domainName);
   const domainNameCamel = toCamelCase(domainName);
 
-  const useCaseClassName = `${domainNamePascal}UseCase`;
-
-  const spinner = ora(`Generating for ${useCaseClassName}...\n`).start();
+  const spinner = ora(`Generating use cases for ${domainNamePascal}...\n`).start();
 
   try {
     const cwd = process.cwd();
 
     const moduleDir = path.join(cwd, 'src', 'api', domainNameKebab);
-    const useCaseDir = path.join(moduleDir, 'application');
+    const commandDir = path.join(moduleDir, 'application', 'command');
+    const queryDir = path.join(moduleDir, 'application', 'query');
+    const actionDir = path.join(commandDir, 'action');
 
-    fs.mkdirSync(useCaseDir, { recursive: true });
+    fs.mkdirSync(actionDir, { recursive: true });
+    fs.mkdirSync(queryDir, { recursive: true });
 
-    const domainFilePath = path.join(useCaseDir, `find-${domainNameKebab}.use-case.ts`);
-    const relativePath = path.relative(cwd, domainFilePath);
+    const replacements = (template: string): string =>
+      template
+        .replace(/{{domainNamePascal}}/g, domainNamePascal)
+        .replace(/{{domainNameKebab}}/g, domainNameKebab)
+        .replace(/{{domainNameCamel}}/g, domainNameCamel);
 
-    if (fs.existsSync(domainFilePath)) {
-      spinner.info(logSkipped(useCaseClassName, relativePath));
-      return;
-    }
+    const files: { name: string; template: string; target: string }[] = [
+      {
+        name: `Create${domainNamePascal}UseCase`,
+        template: 'use-case-command-create.hbs',
+        target: path.join(commandDir, `create-${domainNameKebab}.use-case.ts`),
+      },
+      {
+        name: `Update${domainNamePascal}UseCase`,
+        template: 'use-case-command-update.hbs',
+        target: path.join(commandDir, `update-${domainNameKebab}.use-case.ts`),
+      },
+      {
+        name: `Delete${domainNamePascal}UseCase`,
+        template: 'use-case-command-delete.hbs',
+        target: path.join(commandDir, `delete-${domainNameKebab}.use-case.ts`),
+      },
+      {
+        name: `Find${domainNamePascal}UseCase`,
+        template: 'use-case-query-find.hbs',
+        target: path.join(queryDir, `find-${domainNameKebab}.use-case.ts`),
+      },
+      {
+        name: `Find${domainNamePascal}ListUseCase`,
+        template: 'use-case-query-find-list.hbs',
+        target: path.join(queryDir, `find-${domainNameKebab}-list.use-case.ts`),
+      },
+      {
+        name: `Create${domainNamePascal}Command`,
+        template: 'use-case-command-action-create.hbs',
+        target: path.join(actionDir, `create-${domainNameKebab}.command.ts`),
+      },
+      {
+        name: `Update${domainNamePascal}Command`,
+        template: 'use-case-command-action-update.hbs',
+        target: path.join(actionDir, `update-${domainNameKebab}.command.ts`),
+      },
+    ];
 
-    const templatePath = path.join(__dirname, '../../template/use-case.hbs');
-    const template = fs.readFileSync(templatePath, 'utf8');
+    const logs: string[] = [];
 
-    const content = template
-      .replace(/{{useCaseClassName}}/g, useCaseClassName)
-      .replace(/{{domainNamePascal}}/g, domainNamePascal)
-      .replace(/{{domainNameKebab}}/g, domainNameKebab)
-      .replace(/{{domainNameCamel}}/g, domainNameCamel);
+    files.forEach(({ name, template, target }) => {
+      const relativePath = path.relative(cwd, target);
+      if (fs.existsSync(target)) {
+        logs.push(logSkipped(name, relativePath));
+        return;
+      }
 
-    fs.writeFileSync(domainFilePath, content, { encoding: 'utf8' });
+      const templatePath = path.join(__dirname, '../../template', template);
+      const raw = fs.readFileSync(templatePath, 'utf8');
+      const content = replacements(raw);
+
+      fs.writeFileSync(target, content, { encoding: 'utf8' });
+      logs.push(logCreated(name, relativePath));
+    });
 
     updateFeatureModule(domainName, { addUseCase: true });
 
-    spinner.succeed(logCreated(useCaseClassName, relativePath));
+    if (logs.length) logs.forEach((msg) => spinner.succeed(msg));
+    else spinner.succeed(`No files generated for ${domainNamePascal}`);
   } catch (error: unknown) {
-    spinner.fail(logFailure(useCaseClassName));
+    spinner.fail(logFailure(`${domainNamePascal} use cases`));
     throw error;
   }
 };

@@ -1,0 +1,15 @@
+import { Injectable } from '@nestjs/common';
+import { {{domainNamePascal}}Service } from '../../domain/{{domainNameKebab}}.service';
+import { Update{{domainNamePascal}}Command } from './action/update-{{domainNameKebab}}.command';
+
+@Injectable()
+export class Update{{domainNamePascal}}UseCase {
+  constructor(private readonly {{domainNameCamel}}Service: {{domainNamePascal}}Service) {}
+
+  async execute(command: Update{{domainNamePascal}}Command): Promise<void> {
+    return await this.{{domainNameCamel}}Service.update{{domainNamePascal}}(
+      command.idx,
+      command.toUpdateProps(),
+    );
+  }
+}

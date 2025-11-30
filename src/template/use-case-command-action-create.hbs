@@ -1,0 +1,16 @@
+import { {{domainNamePascal}}CreateProps } from 'src/api/{{domainNameKebab}}/domain/{{domainNameKebab}}.type';
+
+export class Create{{domainNamePascal}}Command {
+  private constructor(private readonly props: {{domainNamePascal}}CreateProps) {}
+
+  static create(props: {{domainNamePascal}}CreateProps): Create{{domainNamePascal}}Command {
+    return new Create{{domainNamePascal}}Command(props);
+  }
+
+  toCreateProps(): {{domainNamePascal}}CreateProps {
+    return {
+      required: this.props.required,
+      nullable: this.props.nullable,
+    };
+  }
+}

@@ -1,0 +1,12 @@
+import { Injectable } from '@nestjs/common';
+import { {{domainNamePascal}}Service } from '../../domain/{{domainNameKebab}}.service';
+import { Create{{domainNamePascal}}Command } from './action/create-{{domainNameKebab}}.command';
+
+@Injectable()
+export class Create{{domainNamePascal}}UseCase {
+  constructor(private readonly {{domainNameCamel}}Service: {{domainNamePascal}}Service) {}
+
+  async execute(command: Create{{domainNamePascal}}Command): Promise<void> {
+    return await this.{{domainNameCamel}}Service.create{{domainNamePascal}}(command.toCreateProps());
+  }
+}
