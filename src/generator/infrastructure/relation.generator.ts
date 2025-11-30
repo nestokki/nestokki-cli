@@ -303,6 +303,10 @@ const updateRelationProps = (
   content = ensureNamedImport(content, `${targetDomain}Domain`, importPath);
 
   const lines = content.split('\n');
+  const lastImportIdx = lines.reduce((idx, line, i) => (line.startsWith('import') ? i : idx), -1);
+  if (lastImportIdx !== -1 && (lines[lastImportIdx + 1]?.trim() ?? '') !== '') {
+    lines.splice(lastImportIdx + 1, 0, '');
+  }
   let interfaceIndex = lines.findIndex((line) =>
     line.includes(`interface ${relationInterfaceName}`),
   );
