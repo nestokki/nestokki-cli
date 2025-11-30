@@ -216,13 +216,21 @@ const addBaseSide = (
       ? `  @JoinColumn({ name: '${options.fkColumn}' })\n`
       : '';
 
-  const snippet = `  // Relation: ${baseEntity} -> ${targetEntity}\n  ${decorator}\n${joinColumn}  ${options.propertyName}: ${propertyType};`;
+  const fkPropName = toCamelCase(options.fkColumn);
+  const fkCommentTarget = targetEntity.replace(/Entity$/, '');
+  const fkSnippet =
+    relationType === RelationCategory.ONE_TO_MANY
+      ? ''
+      : `  @Column('int', {\n    name: '${options.fkColumn}',\n    unsigned: true,\n    nullable: ${options.nullable ? 'true' : 'false'},\n    comment: '${fkCommentTarget} FK',\n  })\n  ${fkPropName}: number${options.nullable ? ' | null' : ''};\n\n`;
+
+  const snippet = `${fkSnippet}  // Relation: ${baseEntity} -> ${targetEntity}\n  ${decorator}\n${joinColumn}  ${options.propertyName}: ${propertyType};`;
 
   if (content.includes(`${options.propertyName}:`)) {
     throw new Error(`Property "${options.propertyName}" already exists in ${baseEntity}.`);
   }
 
   const imports: string[] = [];
+  if (fkSnippet) imports.push('Column');
   if (relationType === RelationCategory.MANY_TO_ONE) imports.push('ManyToOne');
   if (relationType === RelationCategory.ONE_TO_MANY) imports.push('OneToMany');
   if (relationType === RelationCategory.ONE_TO_ONE) imports.push('OneToOne');
@@ -268,9 +276,17 @@ const addInverseSide = (
     throw new Error(`Property "${inverseProp}" already exists in ${targetEntity}.`);
   }
 
-  const snippet = `  // Relation: ${targetEntity} -> ${baseEntity}\n  ${decorator}\n${joinColumn}  ${inverseProp}: ${propertyType};`;
+  const fkPropName = toCamelCase(options.fkColumn);
+  const fkCommentTarget = baseEntity.replace(/Entity$/, '');
+  const fkSnippet =
+    inverseType === RelationCategory.ONE_TO_MANY
+      ? ''
+      : `  @Column('int', {\n    name: '${options.fkColumn}',\n    unsigned: true,\n    nullable: ${options.nullable ? 'true' : 'false'},\n    comment: '${fkCommentTarget} FK',\n  })\n  ${fkPropName}: number${options.nullable ? ' | null' : ''};\n\n`;
+
+  const snippet = `${fkSnippet}  // Relation: ${targetEntity} -> ${baseEntity}\n  ${decorator}\n${joinColumn}  ${inverseProp}: ${propertyType};`;
 
   const imports: string[] = [];
+  if (fkSnippet) imports.push('Column');
   if (inverseType === RelationCategory.MANY_TO_ONE) imports.push('ManyToOne');
   if (inverseType === RelationCategory.ONE_TO_MANY) imports.push('OneToMany');
   if (inverseType === RelationCategory.ONE_TO_ONE) imports.push('OneToOne');
@@ -478,6 +494,7 @@ const updateMapper = (
   relationType: RelationCategory,
   targetMapper: string,
   importPath: string,
+  fkColumn?: string,
 ): void => {
   let content = fs.readFileSync(filePath, 'utf8');
 
@@ -511,12 +528,21 @@ const updateMapper = (
 
   const mappingFn = getMappingFunction(relationType);
   const relationLine = `      ${propertyName}: ${mappingFn}(entity.${propertyName}, ${targetMapper}.toDomain),`;
+  const needsFk =
+    fkColumn &&
+    (relationType === RelationCategory.MANY_TO_ONE || relationType === RelationCategory.ONE_TO_ONE);
+  const fkPropName = needsFk ? toCamelCase(fkColumn) : undefined;
+  const fkLine = fkPropName ? `      ${fkPropName}: entity.${fkPropName},` : undefined;
 
-  if (!before.includes(`${propertyName}:`)) {
+  const linesToAdd: string[] = [];
+  if (fkLine && !before.includes(`${fkPropName}:`)) linesToAdd.push(fkLine);
+  if (!before.includes(`${propertyName}:`)) linesToAdd.push(relationLine);
+
+  if (linesToAdd.length) {
     const beforeTrimmed = before.replace(/\s+$/, '');
     const beforeWithComma = beforeTrimmed.endsWith(',') ? beforeTrimmed : `${beforeTrimmed},`;
     const closingLine = `\n${indent}};`;
-    content = `${beforeWithComma}\n${relationLine}${closingLine}${after}`;
+    content = `${beforeWithComma}\n${linesToAdd.join('\n')}${closingLine}${after}`;
   }
 
   fs.writeFileSync(filePath, content, { encoding: 'utf8' });
@@ -640,6 +666,7 @@ export const generateRelation = (config: RelationConfig): void => {
       config.relationType,
       `${targetDomainName}Mapper`,
       targetMapperImportPath,
+      config.options.fkColumn,
     );
     logs.push(
       logUpdatedRelation(
@@ -713,6 +740,7 @@ export const generateRelation = (config: RelationConfig): void => {
         inverseType,
         `${baseDomainName}Mapper`,
         baseMapperImportPath,
+        config.options.fkColumn,
       );
       logs.push(
         logUpdatedRelation(
