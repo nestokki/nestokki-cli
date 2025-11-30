@@ -99,6 +99,71 @@ const ensureEntityImport = (content: string, entityName: string, importPath: str
   return lines.join('\n');
 };
 
+const ensureClassValidatorImport = (content: string, symbol: string): string => {
+  const importRegex = /import\s+{([^}]+)}\s+from\s+['"]class-validator['"]/;
+  if (!importRegex.test(content)) return `import { ${symbol} } from 'class-validator';\n${content}`;
+
+  return content.replace(importRegex, (match, p1) => {
+    const existing = p1
+      .split(',')
+      .map((s: string) => s.trim())
+      .filter(Boolean);
+    const merged = Array.from(new Set([...existing, symbol]));
+    return `import { ${merged.join(', ')} } from 'class-validator'`;
+  });
+};
+
+const updateCreateDto = (filePath: string, fkProp: string): void => {
+  if (!fs.existsSync(filePath)) return;
+  let content = fs.readFileSync(filePath, 'utf8');
+
+  content = ensureClassValidatorImport(content, 'IsNumber');
+
+  const lines = content.split('\n');
+  const classIdx = lines.findIndex((line) => line.includes('export class'));
+  const firstPropIdx = lines.findIndex((line, idx) => idx > classIdx && line.trim().startsWith('@'));
+  const insertIdx = firstPropIdx !== -1 ? firstPropIdx : classIdx + 1;
+
+  const fkBlock = [
+    '  @IsNotEmpty()',
+    '  @IsNumber()',
+    `  ${fkProp}: number;`,
+    '',
+  ];
+
+  if (!lines.some((line) => line.includes(`${fkProp}:`))) {
+    lines.splice(insertIdx, 0, ...fkBlock);
+  }
+
+  const returnIdx = lines.findIndex((line) => line.includes('return {'));
+  if (returnIdx !== -1 && !lines.slice(returnIdx, returnIdx + 10).some((line) => line.includes(`${fkProp}:`))) {
+    lines.splice(returnIdx + 1, 0, `      ${fkProp}: this.${fkProp},`);
+  }
+
+  fs.writeFileSync(filePath, lines.join('\n'), { encoding: 'utf8' });
+};
+
+const updateCreateCommand = (filePath: string, fkProp: string): void => {
+  if (!fs.existsSync(filePath)) return;
+  let content = fs.readFileSync(filePath, 'utf8');
+
+  const returnIdx = content.indexOf('return {');
+  if (returnIdx === -1) return;
+  const blockEnd = content.indexOf('};', returnIdx);
+  if (blockEnd === -1) return;
+
+  const before = content.slice(0, blockEnd);
+  const after = content.slice(blockEnd);
+
+  if (!before.includes(`${fkProp}:`)) {
+    const beforeTrimmed = before.replace(/\s+$/, '');
+    const beforeWithComma = beforeTrimmed.endsWith(',') ? beforeTrimmed : `${beforeTrimmed},`;
+    const fkLine = `      ${fkProp}: this.props.${fkProp},`;
+    content = `${beforeWithComma}\n${fkLine}\n${after}`;
+    fs.writeFileSync(filePath, content, { encoding: 'utf8' });
+  }
+};
+
 const buildPropertyType = (
   relationType: RelationCategory,
   targetEntity: string,
@@ -639,6 +704,26 @@ export const generateRelation = (config: RelationConfig): void => {
       'infrastructure',
       `${baseModule}.mapper.ts`,
     );
+    const baseDtoPath = path.join(
+      cwd,
+      'src',
+      'api',
+      baseModule,
+      'presentation',
+      'command',
+      'dto',
+      `create-${baseModule}.dto.ts`,
+    );
+    const baseCommandPath = path.join(
+      cwd,
+      'src',
+      'api',
+      baseModule,
+      'application',
+      'command',
+      'action',
+      `create-${baseModule}.command.ts`,
+    );
 
     const targetDomainImportPath = normalizeImportPath(
       baseDomainDir,
@@ -678,6 +763,14 @@ export const generateRelation = (config: RelationConfig): void => {
       targetMapperImportPath,
       config.options.fkColumn,
     );
+    if (
+      config.relationType === RelationCategory.MANY_TO_ONE ||
+      config.relationType === RelationCategory.ONE_TO_ONE
+    ) {
+      const fkPropName = toCamelCase(config.options.fkColumn);
+      updateCreateDto(baseDtoPath, fkPropName);
+      updateCreateCommand(baseCommandPath, fkPropName);
+    }
     logs.push(
       logUpdatedRelation(
         `${toPascalCase(baseModule)} props`,
@@ -717,6 +810,26 @@ export const generateRelation = (config: RelationConfig): void => {
         'infrastructure',
         `${targetModule}.mapper.ts`,
       );
+      const targetDtoPath = path.join(
+        cwd,
+        'src',
+        'api',
+        targetModule,
+        'presentation',
+        'command',
+        'dto',
+        `create-${targetModule}.dto.ts`,
+      );
+      const targetCommandPath = path.join(
+        cwd,
+        'src',
+        'api',
+        targetModule,
+        'application',
+        'command',
+        'action',
+        `create-${targetModule}.command.ts`,
+      );
 
       const baseDomainImportPath = normalizeImportPath(
         targetDomainDir,
@@ -752,6 +865,11 @@ export const generateRelation = (config: RelationConfig): void => {
         baseMapperImportPath,
         config.options.fkColumn,
       );
+      if (inverseType === RelationCategory.MANY_TO_ONE || inverseType === RelationCategory.ONE_TO_ONE) {
+        const fkPropName = toCamelCase(config.options.fkColumn);
+        updateCreateDto(targetDtoPath, fkPropName);
+        updateCreateCommand(targetCommandPath, fkPropName);
+      }
       logs.push(
         logUpdatedRelation(
           `${targetEntity} inverse`,
