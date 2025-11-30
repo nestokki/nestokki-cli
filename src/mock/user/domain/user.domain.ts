@@ -22,8 +22,4 @@ export class UserDomain {
   get updatedAt(): Date {
     return this.props.updatedAt;
   }
-
-  private toProps(): Readonly<UserDomainProps> {
-    return { ...this.props };
-  }
 }
