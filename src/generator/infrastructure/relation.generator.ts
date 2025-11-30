@@ -149,11 +149,12 @@ const updateCreateCommand = (filePath: string, fkProp: string): void => {
 
   const returnIdx = content.indexOf('return {');
   if (returnIdx === -1) return;
-  const blockEnd = content.indexOf('};', returnIdx);
-  if (blockEnd === -1) return;
+  const closingMatch = content.slice(returnIdx).match(/\n(\s*)};/);
+  if (!closingMatch || closingMatch.index === undefined) return;
 
-  const before = content.slice(0, blockEnd);
-  const after = content.slice(blockEnd);
+  const closingStart = returnIdx + closingMatch.index + 1; // start of indentation before `};`
+  const before = content.slice(0, closingStart);
+  const after = content.slice(closingStart);
 
   if (!before.includes(`${fkProp}:`)) {
     const beforeTrimmed = before.replace(/\s+$/, '');
