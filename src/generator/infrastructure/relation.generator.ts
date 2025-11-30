@@ -198,6 +198,7 @@ const addBaseSide = (
   const propertyType = buildPropertyType(relationType, targetEntity, options.lazy);
   const inverseProp = options.bidirectional ? options.inversePropertyName : undefined;
   const targetVar = toCamelCase(targetModule);
+  const fkNullable = options.onDelete === OnDeleteCategory.SET_NULL || options.nullable;
   const optionLiteral = buildOptions(
     relationType,
     options,
@@ -221,7 +222,11 @@ const addBaseSide = (
   const fkSnippet =
     relationType === RelationCategory.ONE_TO_MANY
       ? ''
-      : `  @Column('int', {\n    name: '${options.fkColumn}',\n    unsigned: true,\n    nullable: ${options.nullable ? 'true' : 'false'},\n    comment: '${fkCommentTarget} FK',\n  })\n  ${fkPropName}: number${options.nullable ? ' | null' : ''};\n\n`;
+      : `  @Column('int', {\n    name: '${options.fkColumn}',\n    unsigned: true,\n    nullable: ${
+          fkNullable ? 'true' : 'false'
+        },\n    comment: '${fkCommentTarget} FK',\n  })\n  ${fkPropName}: number${
+          fkNullable ? ' | null' : ''
+        };\n\n`;
 
   const snippet = `${fkSnippet}  // Relation: ${baseEntity} -> ${targetEntity}\n  ${decorator}\n${joinColumn}  ${options.propertyName}: ${propertyType};`;
 
@@ -255,6 +260,7 @@ const addInverseSide = (
 
   const propertyType = buildPropertyType(inverseType, baseEntity, options.lazy);
   const baseVar = toCamelCase(config.baseModule);
+  const fkNullable = options.onDelete === OnDeleteCategory.SET_NULL || options.nullable;
   const optionLiteral = buildOptions(
     inverseType,
     options,
@@ -281,7 +287,11 @@ const addInverseSide = (
   const fkSnippet =
     inverseType === RelationCategory.ONE_TO_MANY
       ? ''
-      : `  @Column('int', {\n    name: '${options.fkColumn}',\n    unsigned: true,\n    nullable: ${options.nullable ? 'true' : 'false'},\n    comment: '${fkCommentTarget} FK',\n  })\n  ${fkPropName}: number${options.nullable ? ' | null' : ''};\n\n`;
+      : `  @Column('int', {\n    name: '${options.fkColumn}',\n    unsigned: true,\n    nullable: ${
+          fkNullable ? 'true' : 'false'
+        },\n    comment: '${fkCommentTarget} FK',\n  })\n  ${fkPropName}: number${
+          fkNullable ? ' | null' : ''
+        };\n\n`;
 
   const snippet = `${fkSnippet}  // Relation: ${targetEntity} -> ${baseEntity}\n  ${decorator}\n${joinColumn}  ${inverseProp}: ${propertyType};`;
 
