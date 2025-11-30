@@ -1,31 +1,18 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { {{domainNamePascal}}Repository } from '../infrastructure/{{domainNameKebab}}.repository';
 import { {{domainNamePascal}}Domain } from './{{domainNameKebab}}.domain';
-
-/** Pagination limit type (remove these in real use!) */
-declare enum PageLimit {
-  PER_PAGE_10 = 10,
-  PER_PAGE_20 = 20,
-  PER_PAGE_50 = 50,
-  PER_PAGE_100 = 100,
-}
-/*******************************************************/
+import { {{domainNamePascal}}CreateProps, {{domainNamePascal}}UpdateProps } from './{{domainNameKebab}}.type';
 
 @Injectable()
 export class {{serviceClassName}} {
   constructor(private readonly {{domainNameCamel}}Repository: {{domainNamePascal}}Repository) {}
 
-  async create{{domainNamePascal}}(required: string, nullable: string | null): Promise<void> {
-    await this.{{domainNameCamel}}Repository.create{{domainNamePascal}}({{domainNamePascal}}Domain.create({ required, nullable }));
+  async create{{domainNamePascal}}(props: {{domainNamePascal}}CreateProps): Promise<void> {
+    await this.{{domainNameCamel}}Repository.create{{domainNamePascal}}(props);
   }
 
-  async update{{domainNamePascal}}(
-    domain: {{domainNamePascal}}Domain,
-    idx: number,
-    required?: string,
-    nullable?: string | null,
-  ): Promise<void> {
-    await this.{{domainNameCamel}}Repository.update{{domainNamePascal}}(idx, {{domainNamePascal}}Domain.update(domain, { required, nullable }));
+  async update{{domainNamePascal}}(idx: number, props: {{domainNamePascal}}UpdateProps): Promise<void> {
+    await this.{{domainNameCamel}}Repository.update{{domainNamePascal}}(idx, props);
   }
 
   async remove{{domainNamePascal}}(idx: number): Promise<void> {
@@ -38,8 +25,8 @@ export class {{serviceClassName}} {
     return {{domainNameCamel}};
   }
 
-  async find{{domainNamePascal}}List(page: number, limit: PageLimit): Promise<[{{domainNamePascal}}Domain[], number]> {
-    return await this.{{domainNameCamel}}Repository.find{{domainNamePascal}}List(page, limit);
+  async find{{domainNamePascal}}List(): Promise<{{domainNamePascal}}Domain[]> {
+    return await this.{{domainNameCamel}}Repository.find{{domainNamePascal}}List();
   }
 
   async throwIf{{domainNamePascal}}ExistsByUnique(idx: number): Promise<void> {
