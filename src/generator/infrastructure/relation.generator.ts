@@ -315,7 +315,7 @@ const updateRelationProps = (
       while (insertIndex < lines.length && lines[insertIndex].trim() !== '}') insertIndex += 1;
       if (insertIndex < lines.length) insertIndex += 1;
     }
-    const relationInterfaceBlock = ['', `interface ${relationInterfaceName} {`, `}`, ''];
+    const relationInterfaceBlock = ['', `interface ${relationInterfaceName} {`, `}`];
     lines.splice(insertIndex, 0, ...relationInterfaceBlock);
     interfaceIndex = insertIndex + 1;
   }
@@ -331,23 +331,27 @@ const updateRelationProps = (
 
   const needsFk =
     relationType === RelationCategory.MANY_TO_ONE || relationType === RelationCategory.ONE_TO_ONE;
-  const fkInterfaceName = `${basePascal}Fk`;
+  const fkInterfaceName = `${basePascal}FkProps`;
   const fkPropName = fkColumn ? toCamelCase(fkColumn) : undefined;
 
   if (needsFk && fkPropName) {
     const fkInterfaceExists = lines.some((line) => line.includes(`interface ${fkInterfaceName}`));
     if (!fkInterfaceExists) {
-      const pkInterfaceIndex = lines.findIndex((line) => line.includes(`interface ${basePascal}Pk`));
+      const pkInterfaceIndex = lines.findIndex((line) =>
+        line.includes(`interface ${basePascal}Pk`),
+      );
       let insertIndex = pkInterfaceIndex !== -1 ? pkInterfaceIndex + 1 : 0;
 
       while (insertIndex < lines.length && !lines[insertIndex].includes('}')) insertIndex += 1;
       if (insertIndex < lines.length) insertIndex += 1;
 
-      const fkInterfaceBlock = ['', `interface ${fkInterfaceName} {`, `}`, ''];
+      const fkInterfaceBlock = ['', `interface ${fkInterfaceName} {`, `}`];
       lines.splice(insertIndex, 0, ...fkInterfaceBlock);
     }
 
-    const fkInterfaceIndex = lines.findIndex((line) => line.includes(`interface ${fkInterfaceName}`));
+    const fkInterfaceIndex = lines.findIndex((line) =>
+      line.includes(`interface ${fkInterfaceName}`),
+    );
     const fkCloseIndex = lines.findIndex(
       (line, idx) => idx > fkInterfaceIndex && line.trim() === '}',
     );
@@ -373,7 +377,8 @@ const updateRelationProps = (
       const hasRelationInDomain = domainBlock.some((line) => line.includes(relationInterfaceName));
       if (!hasFkInDomain) {
         const pkLineIdx = lines.findIndex(
-          (line, idx) => idx >= domainTypeStart && idx <= domainTypeEnd && line.includes(`${basePascal}Pk &`),
+          (line, idx) =>
+            idx >= domainTypeStart && idx <= domainTypeEnd && line.includes(`${basePascal}Pk &`),
         );
         const insertAt = pkLineIdx !== -1 ? pkLineIdx + 1 : domainTypeStart + 1;
         lines.splice(insertAt, 0, `  ${fkTypeName} &`);
