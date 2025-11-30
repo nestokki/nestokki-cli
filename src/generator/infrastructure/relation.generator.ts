@@ -287,6 +287,7 @@ const updateRelationProps = (
   propertyName: string,
   targetDomain: string,
   importPath: string,
+  fkColumn?: string,
 ): void => {
   let content = fs.readFileSync(filePath, 'utf8');
   const relationInterface = new RegExp(
@@ -319,6 +320,68 @@ const updateRelationProps = (
   // avoid duplicate
   const alreadyHas = lines.some((line) => line.includes(`${propertyName}?:`));
   if (!alreadyHas) lines.splice(interfaceIndex + 1, 0, relationLine);
+
+  const needsFk =
+    relationType === RelationCategory.MANY_TO_ONE || relationType === RelationCategory.ONE_TO_ONE;
+  const basePascal = toPascalCase(baseModule);
+  const fkInterfaceName = `${basePascal}Fk`;
+  const fkPropName = fkColumn ? toCamelCase(fkColumn) : undefined;
+
+  if (needsFk && fkPropName) {
+    const fkInterfaceExists = lines.some((line) => line.includes(`interface ${fkInterfaceName}`));
+    if (!fkInterfaceExists) {
+      const pkInterfaceIndex = lines.findIndex((line) => line.includes(`interface ${basePascal}Pk`));
+      let insertIndex = pkInterfaceIndex !== -1 ? pkInterfaceIndex + 1 : 0;
+
+      while (insertIndex < lines.length && !lines[insertIndex].includes('}')) insertIndex += 1;
+      if (insertIndex < lines.length) insertIndex += 1;
+
+      const fkInterfaceBlock = ['', `interface ${fkInterfaceName} {`, `}`, ''];
+      lines.splice(insertIndex, 0, ...fkInterfaceBlock);
+    }
+
+    const fkInterfaceIndex = lines.findIndex((line) => line.includes(`interface ${fkInterfaceName}`));
+    const fkCloseIndex = lines.findIndex(
+      (line, idx) => idx > fkInterfaceIndex && line.trim() === '}',
+    );
+
+    const hasFkProp = lines.some((line) => line.includes(`${fkPropName}:`));
+    if (!hasFkProp && fkInterfaceIndex !== -1 && fkCloseIndex !== -1) {
+      lines.splice(fkCloseIndex, 0, `  ${fkPropName}: number | null;`);
+    }
+
+    const fkTypeName = fkInterfaceName;
+    const domainTypeStart = lines.findIndex((line) =>
+      line.startsWith(`export type ${basePascal}DomainProps`),
+    );
+
+    if (domainTypeStart !== -1) {
+      let domainTypeEnd = domainTypeStart;
+      while (domainTypeEnd < lines.length && !lines[domainTypeEnd].trim().endsWith(';')) {
+        domainTypeEnd += 1;
+      }
+
+      const domainBlock = lines.slice(domainTypeStart, domainTypeEnd + 1);
+      const hasFkInDomain = domainBlock.some((line) => line.includes(fkTypeName));
+      if (!hasFkInDomain) {
+        const pkLineIdx = lines.findIndex(
+          (line, idx) => idx >= domainTypeStart && idx <= domainTypeEnd && line.includes(`${basePascal}Pk &`),
+        );
+        const insertAt = pkLineIdx !== -1 ? pkLineIdx + 1 : domainTypeStart + 1;
+        lines.splice(insertAt, 0, `  ${fkTypeName} &`);
+      }
+    }
+
+    const createTypeIndex = lines.findIndex((line) =>
+      line.startsWith(`export type ${basePascal}CreateProps =`),
+    );
+    if (createTypeIndex !== -1 && !lines[createTypeIndex].includes(fkTypeName)) {
+      lines[createTypeIndex] = lines[createTypeIndex].replace(
+        `= ${basePascal}RequiredProps`,
+        `= ${fkTypeName} & ${basePascal}RequiredProps`,
+      );
+    }
+  }
 
   fs.writeFileSync(filePath, lines.join('\n'), { encoding: 'utf8' });
 };
@@ -519,6 +582,7 @@ export const generateRelation = (config: RelationConfig): void => {
       config.options.propertyName,
       targetDomainName,
       targetDomainImportPath,
+      config.options.fkColumn,
     );
     updateDomainGetter(
       baseDomainPath,
@@ -591,6 +655,7 @@ export const generateRelation = (config: RelationConfig): void => {
         config.options.inversePropertyName,
         baseDomainName,
         baseDomainImportPath,
+        config.options.fkColumn,
       );
       updateDomainGetter(
         targetDomainPath,
