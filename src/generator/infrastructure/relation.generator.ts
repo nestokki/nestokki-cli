@@ -99,17 +99,21 @@ const ensureEntityImport = (content: string, entityName: string, importPath: str
   return lines.join('\n');
 };
 
-const ensureClassValidatorImport = (content: string, symbol: string): string => {
-  const importRegex = /import\s+{([^}]+)}\s+from\s+['"]class-validator['"]/;
-  if (!importRegex.test(content)) return `import { ${symbol} } from 'class-validator';\n${content}`;
+const ensureClassValidatorImport = (content: string, symbols: string[]): string => {
+  const importRegex = /import\s+{([^}]+)}\s+from\s+['"]class-validator['"];/;
+  const symbolSet = new Set(symbols);
+
+  if (!importRegex.test(content)) {
+    return `import { ${Array.from(symbolSet).join(', ')} } from 'class-validator';\n${content}`;
+  }
 
   return content.replace(importRegex, (match, p1) => {
     const existing = p1
       .split(',')
       .map((s: string) => s.trim())
       .filter(Boolean);
-    const merged = Array.from(new Set([...existing, symbol]));
-    return `import { ${merged.join(', ')} } from 'class-validator'`;
+    const merged = Array.from(new Set([...existing, ...symbolSet]));
+    return `import { ${merged.join(', ')} } from 'class-validator';`;
   });
 };
 
@@ -117,7 +121,7 @@ const updateCreateDto = (filePath: string, fkProp: string): void => {
   if (!fs.existsSync(filePath)) return;
   let content = fs.readFileSync(filePath, 'utf8');
 
-  content = ensureClassValidatorImport(content, 'IsNumber');
+  content = ensureClassValidatorImport(content, ['IsNotEmpty', 'IsNumber']);
 
   const lines = content.split('\n');
   const classIdx = lines.findIndex((line) => line.includes('export class'));
