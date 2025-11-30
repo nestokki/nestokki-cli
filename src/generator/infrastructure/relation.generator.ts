@@ -583,8 +583,8 @@ export const generateRelation = (config: RelationConfig): void => {
     );
 
     // Domain/props/mapper updates for base
-    const baseDomainDir = path.join(cwd, 'src', 'api', baseModule, 'domain', 'model');
-    const basePropsPath = path.join(baseDomainDir, `${baseModule}-props.interface.ts`);
+    const baseDomainDir = path.join(cwd, 'src', 'api', baseModule, 'domain');
+    const basePropsPath = path.join(baseDomainDir, `${baseModule}.type.ts`);
     const baseDomainPath = path.join(baseDomainDir, `${baseModule}.domain.ts`);
     const baseMapperPath = path.join(
       cwd,
@@ -597,14 +597,14 @@ export const generateRelation = (config: RelationConfig): void => {
 
     const targetDomainImportPath = normalizeImportPath(
       baseDomainDir,
-      path.join(cwd, 'src', 'api', targetModule, 'domain', 'model', `${targetModule}.domain.ts`),
+      path.join(cwd, 'src', 'api', targetModule, 'domain', `${targetModule}.domain.ts`),
     );
     const targetMapperImportPath = normalizeImportPath(
       path.join(cwd, 'src', 'api', baseModule, 'infrastructure'),
       path.join(cwd, 'src', 'api', targetModule, 'infrastructure', `${targetModule}.mapper.ts`),
     );
 
-    if (!fs.existsSync(basePropsPath)) throw new Error(`Props file not found: ${basePropsPath}`);
+    if (!fs.existsSync(basePropsPath)) throw new Error(`Type file not found: ${basePropsPath}`);
     if (!fs.existsSync(baseDomainPath)) throw new Error(`Domain file not found: ${baseDomainPath}`);
     if (!fs.existsSync(baseMapperPath)) throw new Error(`Mapper file not found: ${baseMapperPath}`);
 
@@ -660,8 +660,8 @@ export const generateRelation = (config: RelationConfig): void => {
     // Domain/props/mapper updates for inverse side
     if (config.options.bidirectional && config.options.inversePropertyName) {
       const inverseType = getInverseRelationType(config.relationType);
-      const targetDomainDir = path.join(cwd, 'src', 'api', targetModule, 'domain', 'model');
-      const targetPropsPath = path.join(targetDomainDir, `${targetModule}-props.interface.ts`);
+      const targetDomainDir = path.join(cwd, 'src', 'api', targetModule, 'domain');
+      const targetPropsPath = path.join(targetDomainDir, `${targetModule}.type.ts`);
       const targetDomainPath = path.join(targetDomainDir, `${targetModule}.domain.ts`);
       const targetMapperPath = path.join(
         cwd,
@@ -674,7 +674,7 @@ export const generateRelation = (config: RelationConfig): void => {
 
       const baseDomainImportPath = normalizeImportPath(
         targetDomainDir,
-        path.join(cwd, 'src', 'api', baseModule, 'domain', 'model', `${baseModule}.domain.ts`),
+        path.join(cwd, 'src', 'api', baseModule, 'domain', `${baseModule}.domain.ts`),
       );
       const baseMapperImportPath = normalizeImportPath(
         path.join(cwd, 'src', 'api', targetModule, 'infrastructure'),

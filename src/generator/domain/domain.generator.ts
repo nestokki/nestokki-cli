@@ -16,7 +16,7 @@ export const generateDomain = (domainName: string): void => {
     const cwd = process.cwd();
 
     const moduleDir = path.join(cwd, 'src', 'api', domainNameKebab);
-    const domainDir = path.join(moduleDir, 'domain', 'model');
+    const domainDir = path.join(moduleDir, 'domain');
 
     fs.mkdirSync(domainDir, { recursive: true });
 
