@@ -18,7 +18,7 @@ import {
 } from './prompt/prompt-type.handler';
 import { generateDomain } from './generator/domain/domain.generator';
 import { generateEntity } from './generator/infrastructure/entity.generator';
-import { generatePropsInterface } from './generator/domain/props-interface.generator';
+import { generateType } from './generator/domain/type.generator';
 import { generateService } from './generator/domain/service.generator';
 import { generateMapper } from './generator/infrastructure/mapper.generator';
 import { generateRepository } from './generator/infrastructure/repository.generator';
@@ -63,7 +63,7 @@ program
           }
 
           if (layerTypeList.includes(LayerCategory.DOMAIN)) {
-            generatePropsInterface(domainName);
+            generateType(domainName);
             generateDomain(domainName);
             generateService(domainName);
           }

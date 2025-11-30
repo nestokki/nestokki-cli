@@ -4,27 +4,27 @@ import ora from 'ora';
 import { toPascalCase, toKebabCase } from '../../util/convert-case.util';
 import { logCreated, logFailure, logSkipped } from '../../util/log-style.util';
 
-export const generatePropsInterface = (domainName: string): void => {
+export const generateType = (domainName: string): void => {
   const domainNamePascal = toPascalCase(domainName);
   const domainNameKebab = toKebabCase(domainName);
 
-  const propsInterfaceName = `${domainNamePascal}Type`;
+  const typeName = `${domainNamePascal}Type`;
 
-  const spinner = ora(`Generating for ${propsInterfaceName}...\n`).start();
+  const spinner = ora(`Generating for ${typeName}...\n`).start();
 
   try {
     const cwd = process.cwd();
 
     const moduleDir = path.join(cwd, 'src', 'api', domainNameKebab);
-    const propsInterfaceDir = path.join(moduleDir, 'domain');
+    const typeDir = path.join(moduleDir, 'domain');
 
-    fs.mkdirSync(propsInterfaceDir, { recursive: true });
+    fs.mkdirSync(typeDir, { recursive: true });
 
-    const domainFilePath = path.join(propsInterfaceDir, `${domainNameKebab}.type.ts`);
+    const domainFilePath = path.join(typeDir, `${domainNameKebab}.type.ts`);
     const relativePath = path.relative(cwd, domainFilePath);
 
     if (fs.existsSync(domainFilePath)) {
-      spinner.info(logSkipped(propsInterfaceName, relativePath));
+      spinner.info(logSkipped(typeName, relativePath));
       return;
     }
 
@@ -35,9 +35,9 @@ export const generatePropsInterface = (domainName: string): void => {
 
     fs.writeFileSync(domainFilePath, content, { encoding: 'utf8' });
 
-    spinner.succeed(logCreated(propsInterfaceName, relativePath));
+    spinner.succeed(logCreated(typeName, relativePath));
   } catch (error: unknown) {
-    spinner.fail(logFailure(propsInterfaceName));
+    spinner.fail(logFailure(typeName));
     throw error;
   }
 };
