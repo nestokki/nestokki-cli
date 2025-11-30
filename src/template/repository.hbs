@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, EntityManager } from 'typeorm';
-import { {{domainNamePascal}}Domain } from '../domain/{{domainNameKebab}}.domain';
 import { {{domainNamePascal}}CreateProps, {{domainNamePascal}}UpdateProps } from '../domain/{{domainNameKebab}}.type';
+import { {{domainNamePascal}}Domain } from '../domain/{{domainNameKebab}}.domain';
 import { {{domainNamePascal}}Entity } from './{{domainNameKebab}}.entity';
 import { {{domainNamePascal}}Mapper } from './{{domainNameKebab}}.mapper';
 
@@ -15,19 +15,19 @@ export class {{repositoryClassName}} {
   }
 
   async create{{domainNamePascal}}(props: {{domainNamePascal}}CreateProps, manager?: EntityManager): Promise<void> {
-    await this.repository().save({{domainNamePascal}}Mapper.toEntity(props));
+    await this.repository(manager).save({{domainNamePascal}}Mapper.toEntity(props));
   }
 
   async update{{domainNamePascal}}(idx: number, props: {{domainNamePascal}}UpdateProps, manager?: EntityManager): Promise<void> {
-    await this.repository().update({ idx }, {{domainNamePascal}}Mapper.toPartialEntity(props));
+    await this.repository(manager).update({ idx }, {{domainNamePascal}}Mapper.toPartialEntity(props));
   }
 
-  async remove{{domainNamePascal}}(idx: number, manager?: EntityManager): Promise<void> {
-    await this.repository().delete({ idx });
+  async delete{{domainNamePascal}}(idx: number, manager?: EntityManager): Promise<void> {
+    await this.repository(manager).delete({ idx });
   }
 
   async find{{domainNamePascal}}ByIdx(idx: number, manager?: EntityManager): Promise<{{domainNamePascal}}Domain | null> {
-    const entity = await this.repository()
+    const entity = await this.repository(manager)
       .createQueryBuilder('{{domainNameCamel}}')
       .where('{{domainNameCamel}}.idx = :idx', { idx })
       .getOne();
@@ -35,8 +35,8 @@ export class {{repositoryClassName}} {
     return entity && {{domainNamePascal}}Mapper.toDomain(entity);
   }
 
-  async find{{domainNamePascal}}List(): Promise<{{domainNamePascal}}Domain[]> {
-    const entities = await this.repository()
+  async find{{domainNamePascal}}List(manager?: EntityManager): Promise<{{domainNamePascal}}Domain[]> {
+    const entities = await this.repository(manager)
       .createQueryBuilder('{{domainNameCamel}}')
       .orderBy('{{domainNameCamel}}.createdAt', 'DESC')
       .getMany();

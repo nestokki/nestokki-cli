@@ -15,8 +15,8 @@ export class {{serviceClassName}} {
     await this.{{domainNameCamel}}Repository.update{{domainNamePascal}}(idx, props);
   }
 
-  async remove{{domainNamePascal}}(idx: number): Promise<void> {
-    await this.{{domainNameCamel}}Repository.remove{{domainNamePascal}}(idx);
+  async delete{{domainNamePascal}}(idx: number): Promise<void> {
+    await this.{{domainNameCamel}}Repository.delete{{domainNamePascal}}(idx);
   }
 
   async find{{domainNamePascal}}ByIdx(idx: number): Promise<{{domainNamePascal}}Domain> {
