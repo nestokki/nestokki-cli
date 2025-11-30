@@ -3,10 +3,10 @@ import { UserService } from '../../domain/user.service';
 import { UserDomain } from '../../domain/user.domain';
 
 @Injectable()
-export class FindUserUseCase {
+export class FindUserListUseCase {
   constructor(private readonly userService: UserService) {}
 
-  async execute(idx: number): Promise<UserDomain> {
-    return await this.userService.findUserByIdx(idx);
+  async execute(): Promise<UserDomain[]> {
+    return await this.userService.findUserList();
   }
 }
