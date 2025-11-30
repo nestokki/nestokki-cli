@@ -13,9 +13,7 @@ export class {{domainNamePascal}}QueryController {
 
   @HttpCode(HttpStatus.OK)
   @Get('/:{{domainNameCamel}}Id')
-  async find{{domainNamePascal}}(
-    @Param('{{domainNameCamel}}Id', ParseIntPipe) idx: number,
-  ): Promise<Find{{domainNamePascal}}ResponseDto> {
+  async find{{domainNamePascal}}(@Param('{{domainNameCamel}}Id', ParseIntPipe) idx: number): Promise<Find{{domainNamePascal}}ResponseDto> {
     const {{domainNameCamel}} = await this.find{{domainNamePascal}}UseCase.execute(idx);
     return Find{{domainNamePascal}}ResponseDto.from({{domainNameCamel}});
   }

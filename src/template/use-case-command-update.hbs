@@ -7,9 +7,6 @@ export class Update{{domainNamePascal}}UseCase {
   constructor(private readonly {{domainNameCamel}}Service: {{domainNamePascal}}Service) {}
 
   async execute(command: Update{{domainNamePascal}}Command): Promise<void> {
-    return await this.{{domainNameCamel}}Service.update{{domainNamePascal}}(
-      command.idx,
-      command.toUpdateProps(),
-    );
+    return await this.{{domainNameCamel}}Service.update{{domainNamePascal}}(command.idx, command.toUpdateProps());
   }
 }
