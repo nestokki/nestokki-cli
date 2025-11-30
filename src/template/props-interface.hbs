@@ -15,13 +15,10 @@ interface {{domainNamePascal}}DefaultProps {
   createdAt: Date;
 }
 
-interface {{domainNamePascal}}RelationProps {}
-
 export type {{domainNamePascal}}DomainProps = {{domainNamePascal}}Pk &
   {{domainNamePascal}}RequiredProps &
   {{domainNamePascal}}NullableProps &
-  {{domainNamePascal}}DefaultProps &
-  {{domainNamePascal}}RelationProps;
+  {{domainNamePascal}}DefaultProps;
 
 export type {{domainNamePascal}}CreateProps = {{domainNamePascal}}RequiredProps & {{domainNamePascal}}NullableProps;
 

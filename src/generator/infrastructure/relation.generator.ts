@@ -290,12 +290,8 @@ const updateRelationProps = (
   fkColumn?: string,
 ): void => {
   let content = fs.readFileSync(filePath, 'utf8');
-  const relationInterface = new RegExp(
-    `interface\\s+${toPascalCase(baseModule)}RelationProps\\s*{`,
-  );
-  if (!relationInterface.test(content)) {
-    throw new Error(`RelationProps interface not found in ${filePath}`);
-  }
+  const basePascal = toPascalCase(baseModule);
+  const relationInterfaceName = `${basePascal}RelationProps`;
 
   content = content
     .split('\n')
@@ -307,10 +303,22 @@ const updateRelationProps = (
   content = ensureNamedImport(content, `${targetDomain}Domain`, importPath);
 
   const lines = content.split('\n');
-  const interfaceIndex = lines.findIndex((line) =>
-    line.includes(`interface ${toPascalCase(baseModule)}RelationProps`),
+  let interfaceIndex = lines.findIndex((line) =>
+    line.includes(`interface ${relationInterfaceName}`),
   );
-  if (interfaceIndex === -1) throw new Error(`RelationProps interface not found in ${filePath}`);
+  if (interfaceIndex === -1) {
+    const defaultInterfaceIndex = lines.findIndex((line) =>
+      line.includes(`interface ${basePascal}DefaultProps`),
+    );
+    let insertIndex = defaultInterfaceIndex !== -1 ? defaultInterfaceIndex + 1 : lines.length;
+    if (defaultInterfaceIndex !== -1) {
+      while (insertIndex < lines.length && lines[insertIndex].trim() !== '}') insertIndex += 1;
+      if (insertIndex < lines.length) insertIndex += 1;
+    }
+    const relationInterfaceBlock = ['', `interface ${relationInterfaceName} {`, `}`, ''];
+    lines.splice(insertIndex, 0, ...relationInterfaceBlock);
+    interfaceIndex = insertIndex + 1;
+  }
 
   const relationLine = `  ${propertyName}?: ${getPropsType(
     relationType,
@@ -323,7 +331,6 @@ const updateRelationProps = (
 
   const needsFk =
     relationType === RelationCategory.MANY_TO_ONE || relationType === RelationCategory.ONE_TO_ONE;
-  const basePascal = toPascalCase(baseModule);
   const fkInterfaceName = `${basePascal}Fk`;
   const fkPropName = fkColumn ? toCamelCase(fkColumn) : undefined;
 
@@ -363,12 +370,18 @@ const updateRelationProps = (
 
       const domainBlock = lines.slice(domainTypeStart, domainTypeEnd + 1);
       const hasFkInDomain = domainBlock.some((line) => line.includes(fkTypeName));
+      const hasRelationInDomain = domainBlock.some((line) => line.includes(relationInterfaceName));
       if (!hasFkInDomain) {
         const pkLineIdx = lines.findIndex(
           (line, idx) => idx >= domainTypeStart && idx <= domainTypeEnd && line.includes(`${basePascal}Pk &`),
         );
         const insertAt = pkLineIdx !== -1 ? pkLineIdx + 1 : domainTypeStart + 1;
         lines.splice(insertAt, 0, `  ${fkTypeName} &`);
+      }
+      if (!hasRelationInDomain) {
+        const insertAt = domainTypeEnd;
+        lines.splice(insertAt, 0, `  ${relationInterfaceName} &`);
+        domainTypeEnd += 1;
       }
     }
 
@@ -380,6 +393,22 @@ const updateRelationProps = (
         `= ${basePascal}RequiredProps`,
         `= ${fkTypeName} & ${basePascal}RequiredProps`,
       );
+    }
+  } else {
+    const domainTypeStart = lines.findIndex((line) =>
+      line.startsWith(`export type ${basePascal}DomainProps`),
+    );
+    if (domainTypeStart !== -1) {
+      let domainTypeEnd = domainTypeStart;
+      while (domainTypeEnd < lines.length && !lines[domainTypeEnd].trim().endsWith(';')) {
+        domainTypeEnd += 1;
+      }
+      const domainBlock = lines.slice(domainTypeStart, domainTypeEnd + 1);
+      const hasRelationInDomain = domainBlock.some((line) => line.includes(relationInterfaceName));
+      if (!hasRelationInDomain) {
+        const insertAt = domainTypeEnd;
+        lines.splice(insertAt, 0, `  ${relationInterfaceName} &`);
+      }
     }
   }
 
