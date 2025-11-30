@@ -2,18 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, EntityManager } from 'typeorm';
 import { {{domainNamePascal}}Domain } from '../domain/{{domainNameKebab}}.domain';
-import { {{domainNamePascal}}UpdateProps } from '../domain/{{domainNameKebab}}.type';
+import { {{domainNamePascal}}CreateProps, {{domainNamePascal}}UpdateProps } from '../domain/{{domainNameKebab}}.type';
 import { {{domainNamePascal}}Entity } from './{{domainNameKebab}}.entity';
 import { {{domainNamePascal}}Mapper } from './{{domainNameKebab}}.mapper';
-
-/** Pagination limit type (remove these in real use!) */
-declare enum PageLimit {
-  PER_PAGE_10 = 10,
-  PER_PAGE_20 = 20,
-  PER_PAGE_50 = 50,
-  PER_PAGE_100 = 100,
-}
-/*******************************************************/
 
 @Injectable()
 export class {{repositoryClassName}} {
@@ -23,8 +14,8 @@ export class {{repositoryClassName}} {
     return manager ? manager.getRepository({{domainNamePascal}}Entity) : this.typeOrm;
   }
 
-  async create{{domainNamePascal}}(domain: {{domainNamePascal}}Domain, manager?: EntityManager): Promise<void> {
-    await this.repository().save({{domainNamePascal}}Mapper.toEntity(domain));
+  async create{{domainNamePascal}}(props: {{domainNamePascal}}CreateProps, manager?: EntityManager): Promise<void> {
+    await this.repository().save({{domainNamePascal}}Mapper.toEntity(props));
   }
 
   async update{{domainNamePascal}}(idx: number, props: {{domainNamePascal}}UpdateProps, manager?: EntityManager): Promise<void> {
@@ -44,14 +35,12 @@ export class {{repositoryClassName}} {
     return entity && {{domainNamePascal}}Mapper.toDomain(entity);
   }
 
-  async find{{domainNamePascal}}List(page: number, limit: PageLimit): Promise<[{{domainNamePascal}}Domain[], number]> {
-    const [entities, total] = await this.repository()
+  async find{{domainNamePascal}}List(): Promise<{{domainNamePascal}}Domain[]> {
+    const entities = await this.repository()
       .createQueryBuilder('{{domainNameCamel}}')
       .orderBy('{{domainNameCamel}}.createdAt', 'DESC')
-      .skip((page - 1) * limit)
-      .take(limit)
-      .getManyAndCount();
+      .getMany();
 
-    return [entities.map({{domainNamePascal}}Mapper.toDomain), total];
+    return entities.map({{domainNamePascal}}Mapper.toDomain);
   }
 }
