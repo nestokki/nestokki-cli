@@ -1,0 +1,24 @@
+import { IsOptional, IsString } from 'class-validator';
+import { Update{{domainNamePascal}}Command } from 'src/api/{{domainNameKebab}}/application/command/action/update-{{domainNameKebab}}.command';
+import { {{domainNamePascal}}UpdateProps } from 'src/api/{{domainNameKebab}}/domain/{{domainNameKebab}}.type';
+
+export class Update{{domainNamePascal}}RequestDto {
+  @IsOptional()
+  @IsString()
+  required?: string;
+
+  @IsOptional()
+  @IsString()
+  nullable?: string;
+
+  toUpdateProps(): {{domainNamePascal}}UpdateProps {
+    return {
+      ...(this.required !== undefined && { required: this.required }),
+      ...(this.nullable !== undefined && { nullable: this.nullable }),
+    };
+  }
+
+  toCommand(idx: number): Update{{domainNamePascal}}Command {
+    return Update{{domainNamePascal}}Command.create(idx, this.toUpdateProps());
+  }
+}

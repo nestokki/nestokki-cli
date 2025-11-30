@@ -1,0 +1,45 @@
+import {
+  Controller,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+} from '@nestjs/common';
+import { Create{{domainNamePascal}}UseCase } from '../../application/command/create-{{domainNameKebab}}.use-case';
+import { Update{{domainNamePascal}}UseCase } from '../../application/command/update-{{domainNameKebab}}.use-case';
+import { Delete{{domainNamePascal}}UseCase } from '../../application/command/delete-{{domainNameKebab}}.use-case';
+import { Create{{domainNamePascal}}RequestDto } from './dto/create-{{domainNameKebab}}.dto';
+import { Update{{domainNamePascal}}RequestDto } from './dto/update-{{domainNameKebab}}.dto';
+
+@Controller('{{domainNamePluralKebab}}')
+export class {{domainNamePascal}}CommandController {
+  constructor(
+    private readonly create{{domainNamePascal}}UseCase: Create{{domainNamePascal}}UseCase,
+    private readonly update{{domainNamePascal}}UseCase: Update{{domainNamePascal}}UseCase,
+    private readonly delete{{domainNamePascal}}UseCase: Delete{{domainNamePascal}}UseCase,
+  ) {}
+
+  @HttpCode(HttpStatus.CREATED)
+  @Post('/')
+  async create{{domainNamePascal}}(dto: Create{{domainNamePascal}}RequestDto): Promise<void> {
+    await this.create{{domainNamePascal}}UseCase.execute(dto.toCommand());
+  }
+
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Patch('/:{{domainNameCamel}}Id')
+  async update{{domainNamePascal}}(
+    @Param('{{domainNameCamel}}Id', ParseIntPipe) idx: number,
+    dto: Update{{domainNamePascal}}RequestDto,
+  ): Promise<void> {
+    await this.update{{domainNamePascal}}UseCase.execute(dto.toCommand(idx));
+  }
+
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete('/:{{domainNameCamel}}Id')
+  async delete{{domainNamePascal}}(@Param('{{domainNameCamel}}Id', ParseIntPipe) idx: number): Promise<void> {
+    return await this.delete{{domainNamePascal}}UseCase.execute(idx);
+  }
+}

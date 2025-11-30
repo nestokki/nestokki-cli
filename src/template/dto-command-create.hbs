@@ -1,0 +1,24 @@
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { Create{{domainNamePascal}}Command } from 'src/api/{{domainNameKebab}}/application/command/action/create-{{domainNameKebab}}.command';
+import { {{domainNamePascal}}CreateProps } from 'src/api/{{domainNameKebab}}/domain/{{domainNameKebab}}.type';
+
+export class Create{{domainNamePascal}}RequestDto {
+  @IsNotEmpty()
+  @IsString()
+  required: string;
+
+  @IsOptional()
+  @IsString()
+  nullable?: string;
+
+  toCreateProps(): {{domainNamePascal}}CreateProps {
+    return {
+      required: this.required,
+      nullable: this.nullable ?? null,
+    };
+  }
+
+  toCommand(): Create{{domainNamePascal}}Command {
+    return Create{{domainNamePascal}}Command.create(this.toCreateProps());
+  }
+}

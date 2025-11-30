@@ -1,0 +1,19 @@
+import { {{domainNamePascal}}Domain } from 'src/api/{{domainNameKebab}}/domain/{{domainNameKebab}}.domain';
+import { Find{{domainNamePascal}}ResponseDto } from './find-{{domainNameKebab}}.dto';
+
+export class Find{{domainNamePascal}}ListResponseDto {
+  readonly {{domainNameCamel}}List: Find{{domainNamePascal}}ResponseDto[];
+
+  private constructor(
+    private readonly dto: {
+      {{domainNameCamel}}List: Find{{domainNamePascal}}ResponseDto[];
+    },
+  ) {
+    this.{{domainNameCamel}}List = dto.{{domainNameCamel}}List;
+  }
+
+  static from(domains: {{domainNamePascal}}Domain[]): Find{{domainNamePascal}}ListResponseDto {
+    const {{domainNameCamel}}List = domains.map(Find{{domainNamePascal}}ResponseDto.from);
+    return new Find{{domainNamePascal}}ListResponseDto({ {{domainNameCamel}}List });
+  }
+}

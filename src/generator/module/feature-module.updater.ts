@@ -134,10 +134,15 @@ export const updateFeatureModule = (domainName: string, options: UpdateOptions):
   }
 
   if (options.addController) {
-    const controllerName = `${domainPascal}Controller`;
-    const controllerImportPath = `./presentation/${domainKebab}.controller`;
-    content = ensureNamedImport(content, controllerName, controllerImportPath);
-    controllers.push(controllerName);
+    const controllerList = [
+      { name: `${domainPascal}CommandController`, importPath: `./presentation/command/${domainKebab}-command.controller` },
+      { name: `${domainPascal}QueryController`, importPath: `./presentation/query/${domainKebab}-query.controller` },
+    ];
+
+    controllerList.forEach(({ name, importPath }) => {
+      content = ensureNamedImport(content, name, importPath);
+      controllers.push(name);
+    });
   }
 
   if (providers.length) content = ensureArrayEntries(content, 'providers', providers);

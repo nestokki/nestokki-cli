@@ -1,0 +1,29 @@
+import { Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe } from '@nestjs/common';
+import { Find{{domainNamePascal}}UseCase } from '../../application/query/find-{{domainNameKebab}}.use-case';
+import { Find{{domainNamePascal}}ListUseCase } from '../../application/query/find-{{domainNameKebab}}-list.use-case';
+import { Find{{domainNamePascal}}ResponseDto } from './dto/find-{{domainNameKebab}}.dto';
+import { Find{{domainNamePascal}}ListResponseDto } from './dto/find-{{domainNameKebab}}-list.dto';
+
+@Controller('{{domainNamePluralKebab}}')
+export class {{domainNamePascal}}QueryController {
+  constructor(
+    private readonly find{{domainNamePascal}}UseCase: Find{{domainNamePascal}}UseCase,
+    private readonly find{{domainNamePascal}}ListUseCase: Find{{domainNamePascal}}ListUseCase,
+  ) {}
+
+  @HttpCode(HttpStatus.OK)
+  @Get('/:{{domainNameCamel}}Id')
+  async find{{domainNamePascal}}(
+    @Param('{{domainNameCamel}}Id', ParseIntPipe) idx: number,
+  ): Promise<Find{{domainNamePascal}}ResponseDto> {
+    const {{domainNameCamel}} = await this.find{{domainNamePascal}}UseCase.execute(idx);
+    return Find{{domainNamePascal}}ResponseDto.from({{domainNameCamel}});
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Get('/')
+  async find{{domainNamePascal}}List(): Promise<Find{{domainNamePascal}}ListResponseDto> {
+    const {{domainNameCamel}}List = await this.find{{domainNamePascal}}ListUseCase.execute();
+    return Find{{domainNamePascal}}ListResponseDto.from({{domainNameCamel}}List);
+  }
+}
