@@ -1,12 +1,13 @@
 import fs from 'fs';
 import path from 'path';
 import ora from 'ora';
-import { toPascalCase, toKebabCase } from '../../util/convert-case.util';
+import { toPascalCase, toKebabCase, toCamelCase } from '../../util/convert-case.util';
 import { logCreated, logFailure, logSkipped } from '../../util/log-style.util';
 
 export const generateMapper = (domainName: string): void => {
   const domainNamePascal = toPascalCase(domainName);
   const domainNameKebab = toKebabCase(domainName);
+  const domainNameCamel = toCamelCase(domainName);
 
   const mapperClassName = `${domainNamePascal}Mapper`;
 
@@ -34,7 +35,8 @@ export const generateMapper = (domainName: string): void => {
     const content = template
       .replace(/{{mapperClassName}}/g, mapperClassName)
       .replace(/{{domainNamePascal}}/g, domainNamePascal)
-      .replace(/{{domainNameKebab}}/g, domainNameKebab);
+      .replace(/{{domainNameKebab}}/g, domainNameKebab)
+      .replace(/{{domainNameCamel}}/g, domainNameCamel);
 
     fs.writeFileSync(domainFilePath, content, { encoding: 'utf8' });
 
