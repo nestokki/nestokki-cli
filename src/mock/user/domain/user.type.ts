@@ -1,0 +1,33 @@
+interface UserPk {
+  idx: number;
+}
+
+interface UserFk {
+  // userIdx: number | null;
+}
+
+interface UserRequiredProps {
+  required: string;
+}
+
+interface UserNullableProps {
+  nullable: string | null;
+}
+
+interface UserDefaultProps {
+  updatedAt: Date;
+  createdAt: Date;
+}
+
+interface UserRelationProps {}
+
+export type UserDomainProps = UserPk &
+  UserFk &
+  UserRequiredProps &
+  UserNullableProps &
+  UserDefaultProps &
+  UserRelationProps;
+
+export type UserCreateProps = UserFk & UserRequiredProps & UserNullableProps;
+
+export type UserUpdateProps = Partial<UserRequiredProps & UserNullableProps>;
