@@ -1,4 +1,4 @@
-import { {{domainNamePascal}}DomainProps, {{domainNamePascal}}UpdateProps } from '../domain/{{domainNameKebab}}.type';
+import { {{domainNamePascal}}CreateProps, {{domainNamePascal}}DomainProps, {{domainNamePascal}}UpdateProps } from '../domain/{{domainNameKebab}}.type';
 import { {{domainNamePascal}}Domain } from '../domain/{{domainNameKebab}}.domain';
 import { {{domainNamePascal}}Entity } from './{{domainNameKebab}}.entity';
 
@@ -6,29 +6,27 @@ import { {{domainNamePascal}}Entity } from './{{domainNameKebab}}.entity';
 const isNil = (v: unknown): v is null | undefined => v == null;
 
 /** Maps a many-to-one relation. preserves undefined/null, converts value via fn otherwise. */
-const mapManyToOne = <T>(v: T | null | undefined, fn: (x: T) => any) => (isNil(v) ? v : fn(v));
+const mapManyToOne = <T, R>(v: T | null | undefined, fn: (x: T) => R): R | null | undefined =>
+  isNil(v) ? v : fn(v);
 
 /** Maps a one-to-many relation. preserves undefined, maps each item via fn otherwise. */
-const mapOneToMany = <T>(v: readonly T[] | undefined, fn: (x: T) => any) =>
+const mapOneToMany = <T, R>(v: readonly T[] | undefined, fn: (x: T) => R): R[] | undefined =>
   isNil(v) ? v : v.map(fn);
 
 export class {{mapperClassName}} {
-  /** Entity -> Domain */
   static toDomain(entity: {{domainNamePascal}}Entity): {{domainNamePascal}}Domain {
-    const props: {{domainNamePascal}}DomainProps = {
+    const {{domainNameCamel}}DomainProps: {{domainNamePascal}}DomainProps = {
       idx: entity.idx,
       required: entity.required,
       nullable: entity.nullable,
+      updatedAt: entity.updatedAt,
       createdAt: entity.createdAt,
-      updatedAt: entity.updatedAt
     };
 
-    return {{domainNamePascal}}Domain.fromEntity(props);
+    return {{domainNamePascal}}Domain.fromEntity({{domainNameCamel}}DomainProps);
   }
 
-  /** Domain -> Entity */
-  static toEntity(domain: {{domainNamePascal}}Domain): {{domainNamePascal}}Entity {
-    const props = domain.toCreateProps();
+  static toEntity(props: {{domainNamePascal}}CreateProps): {{domainNamePascal}}Entity {
     const entity = new {{domainNamePascal}}Entity();
 
     entity.required = props.required;
@@ -37,11 +35,10 @@ export class {{mapperClassName}} {
     return entity;
   }
 
-  /** Domain (partial) -> Entity (partial) */
   static toPartialEntity(props: {{domainNamePascal}}UpdateProps): Partial<{{domainNamePascal}}Entity> {
     const entity = new {{domainNamePascal}}Entity();
 
-    if (props.required) entity.required = props.required;
+    if (props.required !== undefined) entity.required = props.required;
     if (props.nullable !== undefined) entity.nullable = props.nullable;
 
     return entity;

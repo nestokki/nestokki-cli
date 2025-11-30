@@ -1,10 +1,15 @@
-import { UserDomain } from '../domain/user.domain';
 import { UserCreateProps, UserDomainProps, UserUpdateProps } from '../domain/user.type';
+import { UserDomain } from '../domain/user.domain';
 import { UserEntity } from './user.entity';
 
+/** Checks if a value is null or undefined. */
 const isNil = (v: unknown): v is null | undefined => v == null;
+
+/** Maps a many-to-one relation. preserves undefined/null, converts value via fn otherwise. */
 const mapManyToOne = <T, R>(v: T | null | undefined, fn: (x: T) => R): R | null | undefined =>
   isNil(v) ? v : fn(v);
+
+/** Maps a one-to-many relation. preserves undefined, maps each item via fn otherwise. */
 const mapOneToMany = <T, R>(v: readonly T[] | undefined, fn: (x: T) => R): R[] | undefined =>
   isNil(v) ? v : v.map(fn);
 
@@ -22,7 +27,6 @@ export class UserMapper {
     return UserDomain.fromEntity(userDomainProps);
   }
 
-  // Insert Command
   static toEntity(props: UserCreateProps): UserEntity {
     const entity = new UserEntity();
 
@@ -32,7 +36,6 @@ export class UserMapper {
     return entity;
   }
 
-  // Update Command
   static toPartialEntity(props: UserUpdateProps): Partial<UserEntity> {
     const entity = new UserEntity();
 
