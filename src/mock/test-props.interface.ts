@@ -6,6 +6,10 @@ interface UserPk {
   idx: number;
 }
 
+interface UserFk {
+  manyToOneIdx: number | null;
+}
+
 interface UserRequiredProps {
   required: string;
 }
@@ -25,11 +29,12 @@ interface UserRelationProps {
 }
 
 export type UserDomainProps = UserPk &
+  UserFk &
   UserRequiredProps &
   UserNullableProps &
   UserDefaultProps &
   UserRelationProps;
 
-export type UserCreateProps = UserRequiredProps & UserNullableProps;
+export type UserCreateProps = UserFk & UserRequiredProps & UserNullableProps;
 
 export type UserUpdateProps = Partial<UserRequiredProps & UserNullableProps>;
