@@ -487,10 +487,15 @@ const updateMapper = (
 
   content = ensureNamedImport(content, targetMapper, importPath);
 
-  const propsStart = content.indexOf('const props');
+  const propsMatch = content.match(/const\s+\w+\s*:\s*[^=]*DomainProps\s*=\s*{/);
+  if (!propsMatch || propsMatch.index === undefined) {
+    throw new Error(`DomainProps object not found in mapper: ${filePath}`);
+  }
+
+  const propsStart = propsMatch.index;
   const propsEnd = content.indexOf('};', propsStart);
-  if (propsStart === -1 || propsEnd === -1) {
-    throw new Error(`props object not found in mapper: ${filePath}`);
+  if (propsEnd === -1) {
+    throw new Error(`DomainProps object closing not found in mapper: ${filePath}`);
   }
 
   const lineStart = content.lastIndexOf('\n', propsStart) + 1;
