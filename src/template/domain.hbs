@@ -1,32 +1,7 @@
-import { {{domainNamePascal}}DomainProps, {{domainNamePascal}}CreateProps, {{domainNamePascal}}UpdateProps } from './{{domainNameKebab}}.type';
+import { {{domainNamePascal}}DomainProps } from './{{domainNameKebab}}.type';
 
 export class {{domainClassName}} {
   private constructor(private readonly props: {{domainNamePascal}}DomainProps) {}
-
-  static create(props: {{domainNamePascal}}CreateProps): {{domainNamePascal}}Domain {
-    const {{domainNamePascal}}DomainProps: {{domainNamePascal}}DomainProps = {
-      idx: 0,
-      required: props.required,
-      nullable: props.nullable,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    return new {{domainNamePascal}}Domain({{domainNamePascal}}DomainProps);
-  }
-
-  static update(targetDomain: {{domainNamePascal}}Domain, props: {{domainNamePascal}}UpdateProps): {{domainNamePascal}}UpdateProps {
-    const hasUpdate = Object.values(props).some((v) => v !== undefined);
-
-    if (!hasUpdate) throw new Error('No fields to update');
-
-    const target = targetDomain.toProps();
-    const isSame = Object.entries(props).every(([k, v]) => target[k as keyof typeof target] === v);
-
-    if (isSame) throw new Error('Nothing changed');
-
-    return props;
-  }
 
   static fromEntity(props: {{domainNamePascal}}DomainProps): {{domainNamePascal}}Domain {
     return new {{domainNamePascal}}Domain(props);
@@ -46,12 +21,5 @@ export class {{domainClassName}} {
   }
   get createdAt(): Date {
     return this.props.createdAt;
-  }
-  
-  private toProps(): Readonly<{{domainNamePascal}}DomainProps> {
-    return { ...this.props };
-  }
-  toCreateProps(): Readonly<{{domainNamePascal}}CreateProps> {
-    return { ...this.props };
   }
 }
