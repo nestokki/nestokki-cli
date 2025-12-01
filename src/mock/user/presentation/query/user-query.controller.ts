@@ -14,14 +14,14 @@ export class UserCommandController {
   @HttpCode(HttpStatus.OK)
   @Get('/:userId')
   async findUser(@Param('userId', ParseIntPipe) idx: number): Promise<FindUserResponseDto> {
-    const user = await this.findUserUseCase.execute(idx);
-    return FindUserResponseDto.from(user);
+    const userModel = await this.findUserUseCase.execute(idx);
+    return FindUserResponseDto.from(userModel);
   }
 
   @HttpCode(HttpStatus.OK)
   @Get('/')
   async findUserList(): Promise<FindUserListResponseDto> {
-    const userList = await this.findUserListUseCase.execute();
-    return FindUserListResponseDto.from(userList);
+    const userModelList = await this.findUserListUseCase.execute();
+    return FindUserListResponseDto.from(userModelList);
   }
 }
