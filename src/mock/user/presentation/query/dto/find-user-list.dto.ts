@@ -1,19 +1,34 @@
-import { UserDomain } from 'src/api/user/domain/user.domain';
-import { FindUserResponseDto } from './find-user.dto';
+import { UserListItemModel } from '../../../application/query/view/user-list-item.model';
 
-export class FindUserListResponseDto {
-  readonly userList: FindUserResponseDto[];
+class userListItemResponse {
+  readonly idx: number;
+  readonly required: string;
+  readonly nullable: string | null;
+  readonly updatedAt: Date;
+  readonly createdAt: Date;
 
-  private constructor(
-    private readonly dto: {
-      userList: FindUserResponseDto[];
-    },
-  ) {
-    this.userList = dto.userList;
+  private constructor(model: UserListItemModel) {
+    this.idx = model.idx;
+    this.required = model.required;
+    this.nullable = model.nullable;
+    this.updatedAt = model.updatedAt;
+    this.createdAt = model.createdAt;
   }
 
-  static from(domains: UserDomain[]): FindUserListResponseDto {
-    const userList = domains.map(FindUserResponseDto.from);
-    return new FindUserListResponseDto({ userList });
+  static from(model: UserListItemModel): userListItemResponse {
+    return new userListItemResponse(model);
+  }
+}
+
+export class FindUserListResponseDto {
+  readonly userList: userListItemResponse[];
+
+  private constructor(userList: userListItemResponse[]) {
+    this.userList = userList;
+  }
+
+  static from(modelList: UserListItemModel[]): FindUserListResponseDto {
+    const userList = modelList.map(userListItemResponse.from);
+    return new FindUserListResponseDto(userList);
   }
 }
