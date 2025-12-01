@@ -1,7 +1,7 @@
 import { UserDomain } from '../../../domain/user.domain';
 
 export interface UserDetailProps {
-  require: string;
+  required: string;
   nullable: string | null;
   createdAt: Date;
 }
@@ -11,14 +11,14 @@ export class UserDetailModel {
 
   static fromUser(user: UserDomain): UserDetailModel {
     return new UserDetailModel({
-      require: user.required,
+      required: user.required,
       nullable: user.nullable,
       createdAt: user.createdAt,
     });
   }
 
-  get require(): string {
-    return this.props.require;
+  get required(): string {
+    return this.props.required;
   }
   get nullable(): string | null {
     return this.props.nullable;

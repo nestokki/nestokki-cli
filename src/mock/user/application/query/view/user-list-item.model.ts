@@ -2,7 +2,7 @@ import { UserDomain } from '../../../domain/user.domain';
 
 export interface UserListItemProps {
   idx: number;
-  require: string;
+  required: string;
   nullable: string | null;
   updatedAt: Date;
   createdAt: Date;
@@ -14,7 +14,7 @@ export class UserListItemModel {
   static fromUser(user: UserDomain): UserListItemModel {
     return new UserListItemModel({
       idx: user.idx,
-      require: user.required,
+      required: user.required,
       nullable: user.nullable,
       updatedAt: user.updatedAt,
       createdAt: user.createdAt,
@@ -24,8 +24,8 @@ export class UserListItemModel {
   get idx(): number {
     return this.props.idx;
   }
-  get require(): string {
-    return this.props.require;
+  get required(): string {
+    return this.props.required;
   }
   get nullable(): string | null {
     return this.props.nullable;
