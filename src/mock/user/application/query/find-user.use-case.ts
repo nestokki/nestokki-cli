@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { UserService } from '../../domain/user.service';
-import { UserDomain } from '../../domain/user.domain';
+import { UserDetailModel } from './view/user-detail.model';
 
 @Injectable()
 export class FindUserUseCase {
   constructor(private readonly userService: UserService) {}
 
-  async execute(idx: number): Promise<UserDomain> {
-    return await this.userService.findUserByIdx(idx);
+  async execute(idx: number): Promise<UserDetailModel> {
+    const user = await this.userService.findUserByIdx(idx);
+    return UserDetailModel.fromUser(user);
   }
 }
