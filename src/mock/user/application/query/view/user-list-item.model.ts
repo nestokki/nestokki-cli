@@ -1,6 +1,6 @@
 import { UserDomain } from '../../../domain/user.domain';
 
-export interface UserListItemProps {
+interface UserListItemProps {
   idx: number;
   required: string;
   nullable: string | null;

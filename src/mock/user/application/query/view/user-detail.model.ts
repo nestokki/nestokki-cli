@@ -1,6 +1,6 @@
 import { UserDomain } from '../../../domain/user.domain';
 
-export interface UserDetailProps {
+interface UserDetailProps {
   required: string;
   nullable: string | null;
   createdAt: Date;
