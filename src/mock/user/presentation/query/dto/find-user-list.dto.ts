@@ -1,6 +1,6 @@
 import { UserListItemModel } from '../../../application/query/view/user-list-item.model';
 
-class userListItemResponse {
+class userListItemDto {
   readonly idx: number;
   readonly required: string;
   readonly nullable: string | null;
@@ -15,20 +15,20 @@ class userListItemResponse {
     this.createdAt = model.createdAt;
   }
 
-  static from(model: UserListItemModel): userListItemResponse {
-    return new userListItemResponse(model);
+  static from(model: UserListItemModel): userListItemDto {
+    return new userListItemDto(model);
   }
 }
 
 export class FindUserListResponseDto {
-  readonly userList: userListItemResponse[];
+  readonly userList: userListItemDto[];
 
-  private constructor(userList: userListItemResponse[]) {
+  private constructor(userList: userListItemDto[]) {
     this.userList = userList;
   }
 
   static from(modelList: UserListItemModel[]): FindUserListResponseDto {
-    const userList = modelList.map(userListItemResponse.from);
+    const userList = modelList.map(userListItemDto.from);
     return new FindUserListResponseDto(userList);
   }
 }
