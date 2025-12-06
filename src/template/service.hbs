@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { {{domainNamePascal}}Repository } from '../infrastructure/{{domainNameKebab}}.repository';
 import { {{domainNamePascal}}Domain } from './{{domainNameKebab}}.domain';
 import { {{domainNamePascal}}CreateProps, {{domainNamePascal}}UpdateProps } from './{{domainNameKebab}}.type';
@@ -27,10 +27,5 @@ export class {{serviceClassName}} {
 
   async find{{domainNamePascal}}List(): Promise<{{domainNamePascal}}Domain[]> {
     return await this.{{domainNameCamel}}Repository.find{{domainNamePascal}}List();
-  }
-
-  async throwIf{{domainNamePascal}}ExistsByUnique(idx: number): Promise<void> {
-    const {{domainNameCamel}} = await this.{{domainNameCamel}}Repository.find{{domainNamePascal}}ByIdx(idx);
-    if ({{domainNameCamel}}) throw new ConflictException('{{domainNameWords}} already exists');
   }
 }
