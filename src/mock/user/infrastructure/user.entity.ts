@@ -17,7 +17,7 @@ export class UserEntity {
   required: string;
 
   @Column('varchar', {
-    name: 'required',
+    name: 'nullable',
     nullable: true,
     comment: 'Nullable Column',
   })
