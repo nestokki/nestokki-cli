@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   HttpCode,
@@ -24,7 +25,7 @@ export class UserCommandController {
 
   @HttpCode(HttpStatus.CREATED)
   @Post('/')
-  async createUser(dto: CreateUserRequestDto): Promise<void> {
+  async createUser(@Body() dto: CreateUserRequestDto): Promise<void> {
     await this.createUserUseCase.execute(dto.toCommand());
   }
 
@@ -32,7 +33,7 @@ export class UserCommandController {
   @Patch('/:userId')
   async updateUser(
     @Param('userId', ParseIntPipe) idx: number,
-    dto: UpdateUserRequestDto,
+    @Body() dto: UpdateUserRequestDto,
   ): Promise<void> {
     await this.updateUserUseCase.execute(dto.toCommand(idx));
   }
