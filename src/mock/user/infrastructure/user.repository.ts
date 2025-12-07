@@ -15,19 +15,19 @@ export class UserRepository {
   }
 
   async createUser(props: UserCreateProps, manager?: EntityManager): Promise<void> {
-    await this.repository().save(UserMapper.toEntity(props));
+    await this.repository(manager).save(UserMapper.toEntity(props));
   }
 
   async updateUser(idx: number, props: UserUpdateProps, manager?: EntityManager): Promise<void> {
-    await this.repository().update({ idx }, UserMapper.toPartialEntity(props));
+    await this.repository(manager).update({ idx }, UserMapper.toPartialEntity(props));
   }
 
   async deleteUser(idx: number, manager?: EntityManager): Promise<void> {
-    await this.repository().delete({ idx });
+    await this.repository(manager).delete({ idx });
   }
 
   async findUserByIdx(idx: number, manager?: EntityManager): Promise<UserDomain | null> {
-    const entity = await this.repository()
+    const entity = await this.repository(manager)
       .createQueryBuilder('user')
       .where('user.idx = :idx', { idx })
       .getOne();
@@ -35,8 +35,8 @@ export class UserRepository {
     return entity && UserMapper.toDomain(entity);
   }
 
-  async findUserList(): Promise<UserDomain[]> {
-    const entities = await this.repository()
+  async findUserList(manager?: EntityManager): Promise<UserDomain[]> {
+    const entities = await this.repository(manager)
       .createQueryBuilder('user')
       .orderBy('user.createdAt', 'DESC')
       .getMany();
