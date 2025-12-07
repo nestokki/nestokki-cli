@@ -1,8 +1,22 @@
 {
   "name": "@nestokki/cli",
+  "description": "Nest CLI helper for file autocompletion",
   "version": "0.0.1",
+  "author": "okonomiyakki",
+  "license": "MIT",
+  "homepage": "https://github.com/nestokki/nestokki-cli#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nestokki/nestokki-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nestokki/nestokki-cli/issues"
+  },
   "bin": {
     "nestokki": "dist/main.js"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   },
   "scripts": {
     "copy:templates": "copyfiles -u 1 src/template/*.hbs dist",
@@ -11,13 +25,13 @@
     "release:minor": "npm version minor && git push && git push --tags",
     "release:major": "npm version major && git push && git push --tags"
   },
-  "keywords": [],
-  "author": "okonomiyakki",
-  "engines": {
-    "node": ">=20.0.0"
-  },
-  "license": "MIT",
-  "description": "Nest CLI helper for file autocompletion",
+  "keywords": [
+    "cli",
+    "nestjs",
+    "typeorm",
+    "ddd",
+    "scaffold"
+  ],
   "dependencies": {
     "chalk": "^4.1.2",
     "commander": "^14.0.2",
