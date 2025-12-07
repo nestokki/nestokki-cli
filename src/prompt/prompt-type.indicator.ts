@@ -18,7 +18,10 @@ export const getFeatureLayerTypeChoices = (domainName: string): CheckableChoices
     { name: `Module (api, ${domainName})`, value: LayerCategory.MODULE, checked: true },
     { name: 'Domain (type, domain, service)', value: LayerCategory.DOMAIN },
     { name: 'Infrastructure (entity, mapper, repository)', value: LayerCategory.INFRASTRUCTURE },
-    { name: 'Application (command-action, query, use-case)', value: LayerCategory.APPLICATION },
+    {
+      name: 'Application (command-action, query-view-model, use-case)',
+      value: LayerCategory.APPLICATION,
+    },
     {
       name: 'Presentation (command-dto, query-dto, controller)',
       value: LayerCategory.PRESENTATION,
