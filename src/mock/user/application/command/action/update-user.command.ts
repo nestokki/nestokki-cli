@@ -1,5 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
-import { UserUpdateProps } from 'src/api/user/domain/user.type';
+import { UserUpdateProps } from '../../../domain/user.type';
 
 export class UpdateUserCommand {
   private constructor(

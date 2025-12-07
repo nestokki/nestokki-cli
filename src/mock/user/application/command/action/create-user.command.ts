@@ -1,4 +1,4 @@
-import { UserCreateProps } from 'src/api/user/domain/user.type';
+import { UserCreateProps } from '../../../domain/user.type';
 
 export class CreateUserCommand {
   private constructor(private readonly props: UserCreateProps) {}

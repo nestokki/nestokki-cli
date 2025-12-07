@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { CreateUserCommand } from 'src/api/user/application/command/action/create-user.command';
-import { UserCreateProps } from 'src/api/user/domain/user.type';
+import { CreateUserCommand } from '../../../application/command/action/create-user.command';
+import { UserCreateProps } from '../../../domain/user.type';
 
 export class CreateUserRequestDto {
   @IsNotEmpty()

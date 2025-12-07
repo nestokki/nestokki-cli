@@ -1,6 +1,6 @@
 import { IsOptional, IsString } from 'class-validator';
-import { UpdateUserCommand } from 'src/api/user/application/command/action/update-user.command';
-import { UserUpdateProps } from 'src/api/user/domain/user.type';
+import { UpdateUserCommand } from '../../../application/command/action/update-user.command';
+import { UserUpdateProps } from '../../../domain/user.type';
 
 export class UpdateUserRequestDto {
   @IsOptional()

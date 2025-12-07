@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { Create{{domainNamePascal}}Command } from 'src/api/{{domainNameKebab}}/application/command/action/create-{{domainNameKebab}}.command';
-import { {{domainNamePascal}}CreateProps } from 'src/api/{{domainNameKebab}}/domain/{{domainNameKebab}}.type';
+import { Create{{domainNamePascal}}Command } from '../../../application/command/action/create-{{domainNameKebab}}.command';
+import { {{domainNamePascal}}CreateProps } from '../../../domain/{{domainNameKebab}}.type';
 
 export class Create{{domainNamePascal}}RequestDto {
   @IsNotEmpty()
