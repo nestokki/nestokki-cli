@@ -1,0 +1,39 @@
+import { {{domainNamePascal}}Domain } from '../../../domain/{{domainNameKebab}}.domain';
+
+interface {{domainNamePascal}}ListItemProps {
+  idx: number;
+  required: string;
+  nullable: string | null;
+  updatedAt: Date;
+  createdAt: Date;
+}
+
+export class {{domainNamePascal}}ListItemModel {
+  private constructor(private readonly props: {{domainNamePascal}}ListItemProps) {}
+
+  static from{{domainNamePascal}}({{domainNameCamel}}: {{domainNamePascal}}Domain): {{domainNamePascal}}ListItemModel {
+    return new {{domainNamePascal}}ListItemModel({
+      idx: {{domainNameCamel}}.idx,
+      required: {{domainNameCamel}}.required,
+      nullable: {{domainNameCamel}}.nullable,
+      updatedAt: {{domainNameCamel}}.updatedAt,
+      createdAt: {{domainNameCamel}}.createdAt,
+    });
+  }
+
+  get idx(): number {
+    return this.props.idx;
+  }
+  get required(): string {
+    return this.props.required;
+  }
+  get nullable(): string | null {
+    return this.props.nullable;
+  }
+  get updatedAt(): Date {
+    return this.props.updatedAt;
+  }
+  get createdAt(): Date {
+    return this.props.createdAt;
+  }
+}

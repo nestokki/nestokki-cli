@@ -1,35 +1,27 @@
-import { {{domainNamePascal}}Domain } from 'src/api/{{domainNameKebab}}/domain/{{domainNameKebab}}.domain';
+import { {{domainNamePascal}}DetailModel } from '../../../application/query/view/{{domainNameKebab}}-detail.model';
 
 export class Find{{domainNamePascal}}ResponseDto {
-  readonly idx: number;
   readonly required: string;
   readonly nullable: string | null;
   readonly createdAt: Date;
-  readonly updatedAt: Date;
 
   private constructor(
-    private readonly dto: {
-      idx: number;
+    private readonly model: {
       required: string;
       nullable: string | null;
       createdAt: Date;
-      updatedAt: Date;
     },
   ) {
-    this.idx = dto.idx;
-    this.required = dto.required;
-    this.nullable = dto.nullable;
-    this.createdAt = dto.createdAt;
-    this.updatedAt = dto.updatedAt;
+    this.required = model.required;
+    this.nullable = model.nullable;
+    this.createdAt = model.createdAt;
   }
 
-  static from(domain: {{domainNamePascal}}Domain): Find{{domainNamePascal}}ResponseDto {
+  static from(model: {{domainNamePascal}}DetailModel): Find{{domainNamePascal}}ResponseDto {
     return new Find{{domainNamePascal}}ResponseDto({
-      idx: domain.idx,
-      required: domain.required,
-      nullable: domain.nullable,
-      createdAt: domain.createdAt,
-      updatedAt: domain.updatedAt,
+      required: model.required,
+      nullable: model.nullable,
+      createdAt: model.createdAt,
     });
   }
 }

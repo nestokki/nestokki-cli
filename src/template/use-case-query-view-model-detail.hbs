@@ -1,0 +1,29 @@
+import { {{domainNamePascal}}Domain } from '../../../domain/{{domainNameKebab}}.domain';
+
+interface {{domainNamePascal}}DetailProps {
+  required: string;
+  nullable: string | null;
+  createdAt: Date;
+}
+
+export class {{domainNamePascal}}DetailModel {
+  private constructor(private readonly props: {{domainNamePascal}}DetailProps) {}
+
+  static from{{domainNamePascal}}({{domainNameCamel}}: {{domainNamePascal}}Domain): {{domainNamePascal}}DetailModel {
+    return new {{domainNamePascal}}DetailModel({
+      required: {{domainNameCamel}}.required,
+      nullable: {{domainNameCamel}}.nullable,
+      createdAt: {{domainNameCamel}}.createdAt,
+    });
+  }
+
+  get required(): string {
+    return this.props.required;
+  }
+  get nullable(): string | null {
+    return this.props.nullable;
+  }
+  get createdAt(): Date {
+    return this.props.createdAt;
+  }
+}

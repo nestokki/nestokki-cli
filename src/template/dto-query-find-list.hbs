@@ -1,19 +1,38 @@
-import { {{domainNamePascal}}Domain } from 'src/api/{{domainNameKebab}}/domain/{{domainNameKebab}}.domain';
-import { Find{{domainNamePascal}}ResponseDto } from './find-{{domainNameKebab}}.dto';
+import { {{domainNamePascal}}ListItemModel } from '../../../application/query/view/{{domainNameKebab}}-list-item.model';
 
 export class Find{{domainNamePascal}}ListResponseDto {
-  readonly {{domainNameCamel}}List: Find{{domainNamePascal}}ResponseDto[];
+  readonly {{domainNameCamel}}List: {{domainNameCamel}}ListItemDto[];
 
   private constructor(
     private readonly dto: {
-      {{domainNameCamel}}List: Find{{domainNamePascal}}ResponseDto[];
+      {{domainNameCamel}}List: {{domainNameCamel}}ListItemDto[];
     },
   ) {
     this.{{domainNameCamel}}List = dto.{{domainNameCamel}}List;
   }
 
-  static from(domains: {{domainNamePascal}}Domain[]): Find{{domainNamePascal}}ListResponseDto {
-    const {{domainNameCamel}}List = domains.map(Find{{domainNamePascal}}ResponseDto.from);
+  static from(models: {{domainNamePascal}}ListItemModel[]): Find{{domainNamePascal}}ListResponseDto {
+    const {{domainNameCamel}}List = models.map({{domainNameCamel}}ListItemDto.from);
     return new Find{{domainNamePascal}}ListResponseDto({ {{domainNameCamel}}List });
+  }
+}
+
+class {{domainNameCamel}}ListItemDto {
+  readonly idx: number;
+  readonly required: string;
+  readonly nullable: string | null;
+  readonly updatedAt: Date;
+  readonly createdAt: Date;
+
+  private constructor(model: {{domainNamePascal}}ListItemModel) {
+    this.idx = model.idx;
+    this.required = model.required;
+    this.nullable = model.nullable;
+    this.updatedAt = model.updatedAt;
+    this.createdAt = model.createdAt;
+  }
+
+  static from(model: {{domainNamePascal}}ListItemModel): {{domainNameCamel}}ListItemDto {
+    return new {{domainNameCamel}}ListItemDto(model);
   }
 }

@@ -14,14 +14,14 @@ export class {{domainNamePascal}}QueryController {
   @HttpCode(HttpStatus.OK)
   @Get('/:{{domainNameCamel}}Id')
   async find{{domainNamePascal}}(@Param('{{domainNameCamel}}Id', ParseIntPipe) idx: number): Promise<Find{{domainNamePascal}}ResponseDto> {
-    const {{domainNameCamel}} = await this.find{{domainNamePascal}}UseCase.execute(idx);
-    return Find{{domainNamePascal}}ResponseDto.from({{domainNameCamel}});
+    const {{domainNameCamel}}Model = await this.find{{domainNamePascal}}UseCase.execute(idx);
+    return Find{{domainNamePascal}}ResponseDto.from({{domainNameCamel}}Model);
   }
 
   @HttpCode(HttpStatus.OK)
   @Get('/')
   async find{{domainNamePascal}}List(): Promise<Find{{domainNamePascal}}ListResponseDto> {
-    const {{domainNameCamel}}List = await this.find{{domainNamePascal}}ListUseCase.execute();
-    return Find{{domainNamePascal}}ListResponseDto.from({{domainNameCamel}}List);
+    const {{domainNameCamel}}ModelList = await this.find{{domainNamePascal}}ListUseCase.execute();
+    return Find{{domainNamePascal}}ListResponseDto.from({{domainNameCamel}}ModelList);
   }
 }

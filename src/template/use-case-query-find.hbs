@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { {{domainNamePascal}}Service } from '../../domain/{{domainNameKebab}}.service';
-import { {{domainNamePascal}}Domain } from '../../domain/{{domainNameKebab}}.domain';
+import { {{domainNamePascal}}DetailModel } from './view/{{domainNameKebab}}-detail.model';
 
 @Injectable()
 export class Find{{domainNamePascal}}UseCase {
   constructor(private readonly {{domainNameCamel}}Service: {{domainNamePascal}}Service) {}
 
-  async execute(idx: number): Promise<{{domainNamePascal}}Domain> {
-    return await this.{{domainNameCamel}}Service.find{{domainNamePascal}}ByIdx(idx);
+  async execute(idx: number): Promise<{{domainNamePascal}}DetailModel> {
+    const {{domainNameCamel}} = await this.{{domainNameCamel}}Service.find{{domainNamePascal}}ByIdx(idx);
+    return {{domainNamePascal}}DetailModel.from{{domainNamePascal}}({{domainNameCamel}});
   }
 }
