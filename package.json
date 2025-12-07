@@ -7,10 +7,6 @@
   "scripts": {
     "copy:templates": "copyfiles -u 1 src/template/*.hbs dist",
     "build": "tsc && npm run copy:templates",
-    "build:watch": "tsc -w",
-    "start:js": "nodemon --watch dist --ext js --exec node dist/main.js",
-    "start:ts": "nodemon --watch src --ext ts --exec ts-node src/main.ts",
-    "start:dev": "concurrently \"npm run build:watch\" \"npm run start:js\"",
     "release:patch": "npm version patch && git push && git push --tags",
     "release:minor": "npm version minor && git push && git push --tags",
     "release:major": "npm version major && git push && git push --tags"
@@ -32,8 +28,6 @@
     "@types/chalk": "^0.4.31",
     "@types/commander": "^2.12.0",
     "@types/inquirer": "^9.0.9",
-    "concurrently": "^9.2.1",
-    "copyfiles": "^2.4.1",
-    "nodemon": "^3.1.11"
+    "copyfiles": "^2.4.1"
   }
 }
