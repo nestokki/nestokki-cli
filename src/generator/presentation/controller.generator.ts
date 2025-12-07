@@ -45,22 +45,22 @@ export const generateController = (domainName: string): void => {
       },
       {
         name: `Create${domainNamePascal}RequestDto`,
-        template: 'dto-command-create.hbs',
+        template: 'controller-dto-command-create.hbs',
         target: path.join(commandDtoDir, `create-${domainNameKebab}.dto.ts`),
       },
       {
         name: `Update${domainNamePascal}RequestDto`,
-        template: 'dto-command-update.hbs',
+        template: 'controller-dto-command-update.hbs',
         target: path.join(commandDtoDir, `update-${domainNameKebab}.dto.ts`),
       },
       {
         name: `Find${domainNamePascal}ResponseDto`,
-        template: 'dto-query-find.hbs',
+        template: 'controller-dto-query-find.hbs',
         target: path.join(queryDtoDir, `find-${domainNameKebab}.dto.ts`),
       },
       {
         name: `Find${domainNamePascal}ListResponseDto`,
-        template: 'dto-query-find-list.hbs',
+        template: 'controller-dto-query-find-list.hbs',
         target: path.join(queryDtoDir, `find-${domainNameKebab}-list.dto.ts`),
       },
     ];
