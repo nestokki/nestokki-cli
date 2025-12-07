@@ -125,22 +125,22 @@ const updateCreateDto = (filePath: string, fkProp: string): void => {
 
   const lines = content.split('\n');
   const classIdx = lines.findIndex((line) => line.includes('export class'));
-  const firstPropIdx = lines.findIndex((line, idx) => idx > classIdx && line.trim().startsWith('@'));
+  const firstPropIdx = lines.findIndex(
+    (line, idx) => idx > classIdx && line.trim().startsWith('@'),
+  );
   const insertIdx = firstPropIdx !== -1 ? firstPropIdx : classIdx + 1;
 
-  const fkBlock = [
-    '  @IsNotEmpty()',
-    '  @IsNumber()',
-    `  ${fkProp}: number;`,
-    '',
-  ];
+  const fkBlock = ['  @IsNotEmpty()', '  @IsNumber()', `  ${fkProp}: number;`, ''];
 
   if (!lines.some((line) => line.includes(`${fkProp}:`))) {
     lines.splice(insertIdx, 0, ...fkBlock);
   }
 
   const returnIdx = lines.findIndex((line) => line.includes('return {'));
-  if (returnIdx !== -1 && !lines.slice(returnIdx, returnIdx + 10).some((line) => line.includes(`${fkProp}:`))) {
+  if (
+    returnIdx !== -1 &&
+    !lines.slice(returnIdx, returnIdx + 10).some((line) => line.includes(`${fkProp}:`))
+  ) {
     lines.splice(returnIdx + 1, 0, `      ${fkProp}: this.${fkProp},`);
   }
 
@@ -179,9 +179,21 @@ const updateMapperToEntityFk = (filePath: string, fkProp: string): void => {
   const alreadyHasFk = lines.some((line) => line.includes(`entity.${fkProp} = props.${fkProp};`));
   if (alreadyHasFk) return;
 
-  const indentMatch = lines[returnIdx].match(/^\s*/);
+  let insertIdx = returnIdx;
+  while (insertIdx - 1 >= 0 && lines[insertIdx - 1].trim() === '') {
+    lines.splice(insertIdx - 1, 1);
+    insertIdx--;
+  }
+
+  const indentMatch = lines[Math.max(insertIdx - 1, 0)].match(/^\s*/);
   const indent = indentMatch ? indentMatch[0] : '';
-  lines.splice(returnIdx, 0, `${indent}entity.${fkProp} = props.${fkProp};`);
+
+  lines.splice(insertIdx, 0, `${indent}entity.${fkProp} = props.${fkProp};`);
+  insertIdx++;
+
+  if (lines[insertIdx] && lines[insertIdx].trim() !== '') {
+    lines.splice(insertIdx, 0, '');
+  }
 
   fs.writeFileSync(filePath, lines.join('\n'), { encoding: 'utf8' });
 };
@@ -888,7 +900,10 @@ export const generateRelation = (config: RelationConfig): void => {
         baseMapperImportPath,
         config.options.fkColumn,
       );
-      if (inverseType === RelationCategory.MANY_TO_ONE || inverseType === RelationCategory.ONE_TO_ONE) {
+      if (
+        inverseType === RelationCategory.MANY_TO_ONE ||
+        inverseType === RelationCategory.ONE_TO_ONE
+      ) {
         const fkPropName = toCamelCase(config.options.fkColumn);
         updateCreateDto(targetDtoPath, fkPropName);
         updateCreateCommand(targetCommandPath, fkPropName);
