@@ -65,12 +65,13 @@ export const generateController = (domainName: string): void => {
       },
     ];
 
-    const logs: string[] = [];
+    const successLogs: string[] = [];
+    const skippedLogs: string[] = [];
 
     files.forEach(({ name, template, target }) => {
       const relativePath = path.relative(cwd, target);
       if (fs.existsSync(target)) {
-        logs.push(logSkipped(name, relativePath));
+        skippedLogs.push(logSkipped(name, relativePath));
         return;
       }
 
@@ -78,13 +79,15 @@ export const generateController = (domainName: string): void => {
       const raw = fs.readFileSync(templatePath, 'utf8');
       const content = replacements(raw);
       fs.writeFileSync(target, content, { encoding: 'utf8' });
-      logs.push(logCreated(name, relativePath));
+      successLogs.push(logCreated(name, relativePath));
     });
 
     updateFeatureModule(domainName, { addController: true });
 
-    if (logs.length) logs.forEach((msg) => spinner.succeed(msg));
-    else spinner.succeed(`No controllers generated for ${domainNamePascal}`);
+    if (successLogs.length) successLogs.forEach((msg) => spinner.succeed(msg));
+    if (skippedLogs.length) skippedLogs.forEach((msg) => spinner.info(msg));
+    if (!successLogs.length && !skippedLogs.length)
+      spinner.succeed(`No controllers generated for ${domainNamePascal}`);
   } catch (error: unknown) {
     spinner.fail(logFailure(`${domainNamePascal} controllers`));
     throw error;
