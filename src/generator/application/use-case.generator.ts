@@ -18,10 +18,12 @@ export const generateUseCase = (domainName: string): void => {
     const moduleDir = path.join(cwd, 'src', 'api', domainNameKebab);
     const commandDir = path.join(moduleDir, 'application', 'command');
     const queryDir = path.join(moduleDir, 'application', 'query');
-    const actionDir = path.join(commandDir, 'action');
+    const commandActionDir = path.join(commandDir, 'action');
+    const queryViewDir = path.join(queryDir, 'view');
 
-    fs.mkdirSync(actionDir, { recursive: true });
+    fs.mkdirSync(commandActionDir, { recursive: true });
     fs.mkdirSync(queryDir, { recursive: true });
+    fs.mkdirSync(queryViewDir, { recursive: true });
 
     const replacements = (template: string): string =>
       template
@@ -56,14 +58,24 @@ export const generateUseCase = (domainName: string): void => {
         target: path.join(queryDir, `find-${domainNameKebab}-list.use-case.ts`),
       },
       {
+        name: `${domainNamePascal}DetailModel`,
+        template: 'use-case-query-view-model-detail.hbs',
+        target: path.join(queryViewDir, `${domainNameKebab}-detail.model.ts`),
+      },
+      {
+        name: `${domainNamePascal}ListItemModel`,
+        template: 'use-case-query-view-model-list-item.hbs',
+        target: path.join(queryViewDir, `${domainNameKebab}-list-item.model.ts`),
+      },
+      {
         name: `Create${domainNamePascal}Command`,
         template: 'use-case-command-action-create.hbs',
-        target: path.join(actionDir, `create-${domainNameKebab}.command.ts`),
+        target: path.join(commandActionDir, `create-${domainNameKebab}.command.ts`),
       },
       {
         name: `Update${domainNamePascal}Command`,
         template: 'use-case-command-action-update.hbs',
-        target: path.join(actionDir, `update-${domainNameKebab}.command.ts`),
+        target: path.join(commandActionDir, `update-${domainNameKebab}.command.ts`),
       },
     ];
 
