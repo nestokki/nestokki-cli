@@ -3,17 +3,13 @@ import { {{domainNamePascal}}ListItemModel } from '../../../application/query/vi
 export class Find{{domainNamePascal}}ListResponseDto {
   readonly {{domainNameCamel}}List: {{domainNameCamel}}ListItemDto[];
 
-  private constructor(
-    private readonly dto: {
-      {{domainNameCamel}}List: {{domainNameCamel}}ListItemDto[];
-    },
-  ) {
-    this.{{domainNameCamel}}List = dto.{{domainNameCamel}}List;
+  private constructor({{domainNameCamel}}List: {{domainNameCamel}}ListItemDto[]) {
+    this.{{domainNameCamel}}List = {{domainNameCamel}}List;
   }
 
-  static from(models: {{domainNamePascal}}ListItemModel[]): Find{{domainNamePascal}}ListResponseDto {
-    const {{domainNameCamel}}List = models.map({{domainNameCamel}}ListItemDto.from);
-    return new Find{{domainNamePascal}}ListResponseDto({ {{domainNameCamel}}List });
+  static from(modelList: {{domainNamePascal}}ListItemModel[]): Find{{domainNamePascal}}ListResponseDto {
+    const {{domainNameCamel}}List = modelList.map({{domainNameCamel}}ListItemDto.from);
+    return new Find{{domainNamePascal}}ListResponseDto({{domainNameCamel}}List);
   }
 }
 
