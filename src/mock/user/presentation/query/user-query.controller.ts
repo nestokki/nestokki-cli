@@ -5,7 +5,7 @@ import { FindUserResponseDto } from './dto/find-user.dto';
 import { FindUserListResponseDto } from './dto/find-user-list.dto';
 
 @Controller('users')
-export class UserCommandController {
+export class UserQueryController {
   constructor(
     private readonly findUserUseCase: FindUserUseCase,
     private readonly findUserListUseCase: FindUserListUseCase,
