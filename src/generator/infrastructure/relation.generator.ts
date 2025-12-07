@@ -169,6 +169,23 @@ const updateCreateCommand = (filePath: string, fkProp: string): void => {
   }
 };
 
+const updateMapperToEntityFk = (filePath: string, fkProp: string): void => {
+  if (!fs.existsSync(filePath)) return;
+  const lines = fs.readFileSync(filePath, 'utf8').split('\n');
+
+  const returnIdx = lines.findIndex((line) => line.includes('return entity;'));
+  if (returnIdx === -1) return;
+
+  const alreadyHasFk = lines.some((line) => line.includes(`entity.${fkProp} = props.${fkProp};`));
+  if (alreadyHasFk) return;
+
+  const indentMatch = lines[returnIdx].match(/^\s*/);
+  const indent = indentMatch ? indentMatch[0] : '';
+  lines.splice(returnIdx, 0, `${indent}entity.${fkProp} = props.${fkProp};`);
+
+  fs.writeFileSync(filePath, lines.join('\n'), { encoding: 'utf8' });
+};
+
 const buildPropertyType = (
   relationType: RelationCategory,
   targetEntity: string,
@@ -775,6 +792,7 @@ export const generateRelation = (config: RelationConfig): void => {
       const fkPropName = toCamelCase(config.options.fkColumn);
       updateCreateDto(baseDtoPath, fkPropName);
       updateCreateCommand(baseCommandPath, fkPropName);
+      updateMapperToEntityFk(baseMapperPath, fkPropName);
     }
     logs.push(
       logUpdatedRelation(
@@ -874,6 +892,7 @@ export const generateRelation = (config: RelationConfig): void => {
         const fkPropName = toCamelCase(config.options.fkColumn);
         updateCreateDto(targetDtoPath, fkPropName);
         updateCreateCommand(targetCommandPath, fkPropName);
+        updateMapperToEntityFk(targetMapperPath, fkPropName);
       }
       logs.push(
         logUpdatedRelation(
