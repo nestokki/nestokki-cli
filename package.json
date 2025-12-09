@@ -1,7 +1,7 @@
 {
   "name": "@nestokki/cli",
   "description": "Nest CLI helper for file autocompletion",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "okonomiyakki",
   "license": "MIT",
   "homepage": "https://github.com/nestokki/nestokki-cli#readme",
