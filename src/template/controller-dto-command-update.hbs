@@ -13,7 +13,7 @@ export class Update{{domainNamePascal}}RequestDto {
 
   toUpdateProps(): {{domainNamePascal}}UpdateProps {
     return {
-      ...(this.required !== undefined && { required: this.required }),
+      ...(this.required != undefined && { required: this.required }),
       ...(this.nullable !== undefined && { nullable: this.nullable }),
     };
   }
